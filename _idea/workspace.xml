@@ -1,0 +1,345 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="e8fe1f60-91b0-40a3-9c42-ddc9dd5f1931" name="Changes" comment="我的第一个github代码若依项目" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="HTML File" />
+        <option value="Class" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="master" />
+      </map>
+    </option>
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GitSEFilterConfiguration">
+    <file-type-list>
+      <filtered-out-file-type name="LOCAL_BRANCH" />
+      <filtered-out-file-type name="REMOTE_BRANCH" />
+      <filtered-out-file-type name="TAG" />
+      <filtered-out-file-type name="COMMIT_BY_MESSAGE" />
+    </file-type-list>
+  </component>
+  <component name="InvalidFacetManager">
+    <ignored-facets>
+      <facet id="ruoyi/invalid/Spring" />
+      <facet id="ruoyi/invalid/Web" />
+    </ignored-facets>
+  </component>
+  <component name="MarkdownSettingsMigration">
+    <option name="stateVersion" value="1" />
+  </component>
+  <component name="MavenImportPreferences">
+    <option name="generalSettings">
+      <MavenGeneralSettings>
+        <option name="localRepository" value="F:\server\apache-maven-3.8.4\repository" />
+        <option name="mavenHome" value="F:/server/apache-maven-3.8.4" />
+        <option name="useMavenConfig" value="true" />
+        <option name="userSettingsFile" value="F:\server\apache-maven-3.8.4\settings.xml" />
+      </MavenGeneralSettings>
+    </option>
+  </component>
+  <component name="ProjectId" id="28p1QizhmuHoqxO8x6iJ3bGaLdN" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
+  <component name="ProjectViewState">
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="DefaultHtmlFileTemplate" value="HTML File" />
+    <property name="RequestMappingsPanelOrder0" value="0" />
+    <property name="RequestMappingsPanelOrder1" value="1" />
+    <property name="RequestMappingsPanelOrder2" value="2" />
+    <property name="RequestMappingsPanelWidth0" value="75" />
+    <property name="RequestMappingsPanelWidth1" value="75" />
+    <property name="RequestMappingsPanelWidth2" value="75" />
+    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/src/main/resources/static/js/view" />
+    <property name="project.structure.last.edited" value="Modules" />
+    <property name="project.structure.proportion" value="0.15" />
+    <property name="project.structure.side.proportion" value="0.2" />
+    <property name="settings.editor.selected.configurable" value="preferences.pluginManager" />
+    <property name="show.run.dashboard.notification" value="false" />
+  </component>
+  <component name="ReactorSettings">
+    <option name="notificationShown" value="true" />
+  </component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="G:\MyCodes\RuoYi\src\main\resources\static\js\view" />
+      <recent name="G:\MyCodes\RuoYi\src\main\resources\static\css\video" />
+      <recent name="G:\MyCodes\RuoYi\src\main\resources\static\js\video" />
+      <recent name="G:\MyCodes\RuoYi\src\main\resources\static\ico" />
+      <recent name="G:\MyCodes\RuoYi\src\main\resources\static\view" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="G:\MyCodes\RuoYi\src\main\resources\static\view\codebase" />
+      <recent name="G:\MyCodes\RuoYi\src\main\resources\static\view" />
+      <recent name="G:\MyCode\RuoYi-fast-master\src\main\resources\static\map\ol" />
+      <recent name="G:\MyCode\RuoYi-fast-master\src\main\resources\static\map" />
+      <recent name="G:\MyCode\RuoYi-fast-master\src\main\resources\static\map\custom" />
+    </key>
+    <key name="CopyClassDialog.RECENTS_KEY">
+      <recent name="com.ruoyi.project.traffic.laneinfo.mapper" />
+      <recent name="com.ruoyi.project.traffic.laneinfo.controller" />
+    </key>
+  </component>
+  <component name="RunManager" selected="Docker.docker_server">
+    <configuration name="RuoYiApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
+      <module name="RuoYi" />
+      <option name="SPRING_BOOT_MAIN_CLASS" value="com.ruoyi.RuoYiApplication" />
+      <option name="ALTERNATIVE_JRE_PATH" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="SynjonesDataItemApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
+      <module name="Synjonese" />
+      <option name="SPRING_BOOT_MAIN_CLASS" value="org.synjonesframework.web.SynjonesDataItemApplication" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="docker_server" type="docker-deploy" factoryName="dockerfile" server-name="Docker155">
+      <deployment type="dockerfile">
+        <settings>
+          <option name="imageTag" value="demo:1.9" />
+          <option name="containerName" value="ruoyi20220803" />
+          <option name="portBindings">
+            <list>
+              <DockerPortBindingImpl>
+                <option name="containerPort" value="80" />
+                <option name="hostPort" value="80" />
+              </DockerPortBindingImpl>
+            </list>
+          </option>
+          <option name="sourceFilePath" value="Dockerfile" />
+        </settings>
+      </deployment>
+      <method v="2" />
+    </configuration>
+    <list>
+      <item itemvalue="Docker.docker_server" />
+      <item itemvalue="Spring Boot.RuoYiApplication" />
+      <item itemvalue="Spring Boot.SynjonesDataItemApplication" />
+    </list>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="e8fe1f60-91b0-40a3-9c42-ddc9dd5f1931" name="Changes" comment="" />
+      <created>1651898716586</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1651898716586</updated>
+      <workItem from="1651898719857" duration="3712000" />
+      <workItem from="1652233107564" duration="14336000" />
+      <workItem from="1652254573061" duration="5931000" />
+      <workItem from="1652314853835" duration="26202000" />
+      <workItem from="1652402991855" duration="14653000" />
+      <workItem from="1652600673136" duration="182000" />
+      <workItem from="1652600962890" duration="109000" />
+      <workItem from="1652601137528" duration="830000" />
+      <workItem from="1652605679205" duration="244000" />
+      <workItem from="1652606004919" duration="8417000" />
+      <workItem from="1652661306102" duration="11576000" />
+      <workItem from="1652700866849" duration="4965000" />
+      <workItem from="1652757895016" duration="2633000" />
+      <workItem from="1652763500838" duration="4872000" />
+      <workItem from="1652791519220" duration="10275000" />
+      <workItem from="1652832893700" duration="14223000" />
+      <workItem from="1652849370694" duration="12961000" />
+      <workItem from="1652873929001" duration="6816000" />
+      <workItem from="1652920497927" duration="28992000" />
+      <workItem from="1652957463981" duration="11353000" />
+      <workItem from="1652969053740" duration="539000" />
+      <workItem from="1653006304568" duration="11601000" />
+      <workItem from="1653030281736" duration="196000" />
+      <workItem from="1653030745920" duration="270000" />
+      <workItem from="1653031558185" duration="516000" />
+      <workItem from="1653032185710" duration="1035000" />
+      <workItem from="1653033308702" duration="4758000" />
+      <workItem from="1653048914899" duration="13255000" />
+      <workItem from="1653106390465" duration="513000" />
+      <workItem from="1653107209070" duration="13465000" />
+      <workItem from="1653189219204" duration="7993000" />
+      <workItem from="1653206691324" duration="14007000" />
+      <workItem from="1653266394762" duration="1166000" />
+      <workItem from="1653269161103" duration="7526000" />
+      <workItem from="1653291344846" duration="721000" />
+      <workItem from="1653302931579" duration="758000" />
+      <workItem from="1653352314852" duration="8170000" />
+      <workItem from="1653367526466" duration="1449000" />
+      <workItem from="1653376445993" duration="664000" />
+      <workItem from="1653439440185" duration="2429000" />
+      <workItem from="1653450304958" duration="12230000" />
+      <workItem from="1653477719480" duration="174000" />
+      <workItem from="1653477951530" duration="12405000" />
+      <workItem from="1653524527546" duration="22192000" />
+      <workItem from="1653567906033" duration="3789000" />
+      <workItem from="1653611956297" duration="2296000" />
+      <workItem from="1653622746048" duration="8876000" />
+      <workItem from="1653726799052" duration="9517000" />
+      <workItem from="1653743483730" duration="8831000" />
+      <workItem from="1653793549449" duration="16757000" />
+      <workItem from="1653957524867" duration="19374000" />
+      <workItem from="1653998658198" duration="4090000" />
+      <workItem from="1654043299362" duration="7537000" />
+      <workItem from="1654151192569" duration="1007000" />
+      <workItem from="1654477071008" duration="3124000" />
+      <workItem from="1654486841975" duration="172000" />
+      <workItem from="1654491879607" duration="6877000" />
+      <workItem from="1654561365540" duration="8924000" />
+      <workItem from="1654578869082" duration="13942000" />
+      <workItem from="1654604124904" duration="2182000" />
+      <workItem from="1654606773761" duration="623000" />
+      <workItem from="1654650254119" duration="8515000" />
+      <workItem from="1654666620566" duration="122000" />
+      <workItem from="1654666763892" duration="7127000" />
+      <workItem from="1654736315350" duration="4037000" />
+      <workItem from="1654740485259" duration="61000" />
+      <workItem from="1654743172875" duration="4345000" />
+      <workItem from="1654763235139" duration="49000" />
+      <workItem from="1654763308687" duration="2576000" />
+      <workItem from="1654766331526" duration="148000" />
+      <workItem from="1654766508562" duration="560000" />
+      <workItem from="1654820222456" duration="18839000" />
+      <workItem from="1655259876885" duration="620000" />
+      <workItem from="1655688800281" duration="4765000" />
+      <workItem from="1656384148954" duration="14950000" />
+      <workItem from="1656478733210" duration="3619000" />
+      <workItem from="1656493664208" duration="1189000" />
+      <workItem from="1656555716106" duration="1378000" />
+      <workItem from="1656557469381" duration="4521000" />
+      <workItem from="1656575697307" duration="3840000" />
+      <workItem from="1656635838481" duration="10028000" />
+      <workItem from="1656646594765" duration="3625000" />
+      <workItem from="1656651926521" duration="11289000" />
+      <workItem from="1657526896156" duration="718000" />
+      <workItem from="1657527685506" duration="1540000" />
+      <workItem from="1657610024266" duration="8103000" />
+      <workItem from="1657671678111" duration="16776000" />
+      <workItem from="1657759769901" duration="2762000" />
+      <workItem from="1657762697653" duration="10315000" />
+      <workItem from="1657778140926" duration="8009000" />
+      <workItem from="1657787349159" duration="3520000" />
+      <workItem from="1657845465590" duration="26637000" />
+      <workItem from="1658106344164" duration="17195000" />
+      <workItem from="1658128239793" duration="7588000" />
+      <workItem from="1658135907454" duration="478000" />
+      <workItem from="1658190768436" duration="10671000" />
+      <workItem from="1658202340049" duration="15803000" />
+      <workItem from="1658278061144" duration="20001000" />
+      <workItem from="1658374612433" duration="1451000" />
+      <workItem from="1658970388104" duration="6838000" />
+      <workItem from="1658985179007" duration="7775000" />
+      <workItem from="1659056582262" duration="8070000" />
+      <workItem from="1659066589340" duration="12254000" />
+      <workItem from="1659321845548" duration="2160000" />
+      <workItem from="1659324805113" duration="958000" />
+      <workItem from="1659334538948" duration="1559000" />
+      <workItem from="1659338511312" duration="520000" />
+      <workItem from="1659404309645" duration="7241000" />
+      <workItem from="1659417190926" duration="2937000" />
+      <workItem from="1659421160609" duration="5360000" />
+      <workItem from="1659427231064" duration="2405000" />
+      <workItem from="1659487164120" duration="728000" />
+      <workItem from="1659497276921" duration="549000" />
+      <workItem from="1659497878980" duration="1150000" />
+      <workItem from="1659590298974" duration="681000" />
+      <workItem from="1659591065944" duration="823000" />
+    </task>
+    <task id="LOCAL-00001" summary="我的第一个github代码若依项目">
+      <created>1654739487259</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1654739487259</updated>
+    </task>
+    <task id="LOCAL-00002" summary="我的第一个github代码若依项目">
+      <created>1654751005523</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1654751005523</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State>
+              <option name="FILTERS">
+                <map>
+                  <entry key="branch">
+                    <value>
+                      <list>
+                        <option value="liusuyi2021/master" />
+                      </list>
+                    </value>
+                  </entry>
+                </map>
+              </option>
+            </State>
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="我的第一个github代码若依项目" />
+    <option name="LAST_COMMIT_MESSAGE" value="我的第一个github代码若依项目" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/com/ruoyi/project/traffic/crossinginfo/service/impl/TrafficCrossingInfoServiceImpl.java</url>
+          <line>116</line>
+          <option name="timeStamp" value="6" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
+    <watches-manager>
+      <configuration name="SpringBootApplicationConfigurationType">
+        <watch expression="LaneInfo" language="JAVA" />
+        <watch expression="ChanList.contains(chan.getId())" language="JAVA" />
+        <watch expression="chan.getId()" language="JAVA" />
+        <watch expression="lane.getChannelId()" language="JAVA" />
+        <watch expression="trafficDeviceInfo.getDeviceId()" language="JAVA" />
+        <watch expression="Long.parseLong(trafficDeviceInfo.getDeviceId())" language="JAVA" />
+        <watch expression="trafficDeviceInfo.getDeviceId()" language="JAVA" />
+        <watch expression="trafficVehiclePass.getPassTime()" language="JAVA" />
+        <watch expression="passTimes" language="JAVA" />
+        <watch expression="trafficVehiclePass.getCrossingId()" language="JAVA" />
+      </configuration>
+    </watches-manager>
+  </component>
+  <component name="XSLT-Support.FileAssociations.UIState">
+    <expand />
+    <select />
+  </component>
+</project>

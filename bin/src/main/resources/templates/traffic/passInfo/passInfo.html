@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+    <th:block th:include="include :: header('卡口过车列表')"/>
+</head>
+<body class="gray-bg">
+<div class="container-div">
+    <div class="row">
+        <div class="col-sm-12 search-collapse">
+            <form id="formId">
+                <div class="select-list">
+                    <ul>
+                        <li>
+                            <label>过车时间：</label>
+                            <input type="text"  id="laydate-demo-4" name="params[passTime]"
+                                   placeholder="请选择过车时间">
+                        </li>
+                        <li>
+                            <label>卡口名称：</label>
+                            <input type="text" name="crossingName"/>
+                        </li>
+                        <li>
+                            <label>车牌号码：</label>
+                            <input type="text" name="plateNo"/>
+                        </li>
+                        <li>
+                            <label>车牌颜色：</label>
+                            <select name="plateColor" th:with="type=${@dict.getType('plate_color')}">
+                                <option value="">所有</option>
+                                <option th:each="dict : ${type}" th:text="${dict.dictLabel}"
+                                        th:value="${dict.dictValue}"></option>
+                            </select>
+                        </li>
+                        <li>
+                            <label>车牌类型：</label>
+                            <select name="plateType" th:with="type=${@dict.getType('plate_type')}">
+                                <option value="">所有</option>
+                                <option th:each="dict : ${type}" th:text="${dict.dictLabel}"
+                                        th:value="${dict.dictValue}"></option>
+                            </select>
+                        </li>
+                        <li>
+                            <label>车身颜色：</label>
+                            <select name="vehicleColor" th:with="type=${@dict.getType('vehicle_color')}">
+                                <option value="">所有</option>
+                                <option th:each="dict : ${type}" th:text="${dict.dictLabel}"
+                                        th:value="${dict.dictValue}"></option>
+                            </select>
+                        </li>
+                        <li>
+                            <label>车辆类型：</label>
+                            <select name="vehicleType" th:with="type=${@dict.getType('vehicle_type')}">
+                                <option value="">所有</option>
+                                <option th:each="dict : ${type}" th:text="${dict.dictLabel}"
+                                        th:value="${dict.dictValue}"></option>
+                            </select>
+                        </li>
+                        <li>
+                            <label>车道号：</label>
+                            <select name="laneNo" th:with="type=${@dict.getType('lane_no')}">
+                                <option value="">所有</option>
+                                <option th:each="dict : ${type}" th:text="${dict.dictLabel}"
+                                        th:value="${dict.dictValue}"></option>
+                            </select>
+                        </li>
+                        <li>
+                            <label>行驶方向：</label>
+                            <select name="direction" th:with="type=${@dict.getType('drive_direction')}">
+                                <option value="">所有</option>
+                                <option th:each="dict : ${type}" th:text="${dict.dictLabel}"
+                                        th:value="${dict.dictValue}"></option>
+                            </select>
+                        </li>
+                        <li>
+                            <a class="btn btn-primary btn-rounded btn-sm" onclick="$.table.search()"><i
+                                    class="fa fa-search"></i>&nbsp;搜索</a>
+                            <a class="btn btn-warning btn-rounded btn-sm" onclick="$.form.reset()"><i
+                                    class="fa fa-refresh"></i>&nbsp;重置</a>
+                        </li>
+                    </ul>
+                </div>
+            </form>
+        </div>
+
+        <div class="btn-group-sm" id="toolbar" role="group">
+            <a class="btn btn-warning" onclick="exportSelected()" shiro:hasPermission="traffic:passInfo:export">
+                <i class="fa fa-download"></i> 导出
+            </a>
+        </div>
+        <div class="col-sm-12 select-table table-striped">
+            <table id="bootstrap-table"></table>
+        </div>
+    </div>
+</div>
+<th:block th:include="include :: footer"/>
+<script th:inline="javascript">
+    var editFlag = [[${@permission.hasPermi('traffic:passInfo:edit')}]];
+    var removeFlag = [[${@permission.hasPermi('traffic:passInfo:remove')}]];
+    var plateColorDatas = [[${@dict.getType('plate_color')}]];
+    var plateTypeDatas = [[${@dict.getType('plate_type')}]];
+    var vehicleColorDatas = [[${@dict.getType('vehicle_color')}]];
+    var vehicleTypeDatas = [[${@dict.getType('vehicle_type')}]];
+    var laneNoDatas = [[${@dict.getType('lane_no')}]];
+    var directionDatas = [[${@dict.getType('drive_direction')}]];
+    var prefix = ctx + "traffic/passInfo";
+
+    $(function () {
+        <!-- laydate示例 -->
+        layui.use('laydate', function () {
+            var laydate = layui.laydate;
+
+            laydate.render({
+                elem: '#laydate-demo-4',
+                type: 'datetime',
+                range: '~'
+            });
+        });
+        var options = {
+            url: prefix + "/list",
+            createUrl: prefix + "/add",
+            updateUrl: prefix + "/edit/{id}",
+            removeUrl: prefix + "/remove",
+            exportUrl: prefix + "/export",
+            uniqueId: 'passId',  // 配置唯一标识
+            clickToSelect: true,  // 点击行选择
+            maintainSelected: true,  // 翻页保留所选行，需要和sidePagination一起使用才能生效
+            rememberSelected: true,  // 翻页记录所选行
+            modalName: "卡口过车",
+            sortName: "passId",
+            sortOrder: "desc",
+            columns: [{
+                checkbox: true
+            },
+                {
+                    field: 'passId',
+                    title: '过车ID',
+                    visible: false
+                },
+                {
+                    field: 'crossingInfo.crossingName',
+                    title: '卡口名称',
+                    visible: false
+                },
+                {
+                    field: 'plateNo',
+                    title: '车牌号码'
+                },
+                {
+                    field: 'passTime',
+                    title: '过车时间'
+                },
+                {
+                    field: 'plateColor',
+                    title: '车牌颜色',
+                    formatter: function (value, row, index) {
+                        return $.table.selectDictLabel(plateColorDatas, value);
+                    }
+                },
+                {
+                    field: 'plateType',
+                    title: '车牌类型',
+                    formatter: function (value, row, index) {
+                        return $.table.selectDictLabel(plateTypeDatas, value);
+                    }
+                },
+                {
+                    field: 'vehicleColor',
+                    title: '车身颜色',
+                    formatter: function (value, row, index) {
+                        return $.table.selectDictLabel(vehicleColorDatas, value);
+                    }
+                },
+                {
+                    field: 'vehicleType',
+                    title: '车辆类型',
+                    formatter: function (value, row, index) {
+                        return $.table.selectDictLabel(vehicleTypeDatas, value);
+                    }
+                },
+                {
+                    field: 'laneNo',
+                    title: '车道号',
+                    formatter: function (value, row, index) {
+                        return $.table.selectDictLabel(laneNoDatas, value);
+                    }
+                },
+                {
+                    field: 'direction',
+                    title: '行驶方向',
+                    formatter: function (value, row, index) {
+                        return $.table.selectDictLabel(directionDatas, value);
+                    }
+                },
+                {
+                    field: 'plateImage',
+                    title: '车牌图片',
+                    formatter: function (value, row, index) {
+                        return $.table.imageView(value, 100, 300);
+                    }
+                },
+                {
+                    field: 'vehicleImage',
+                    title: '车辆图片',
+                    formatter: function (value, row, index) {
+                        return $.table.imageView(value, 600, 800);
+                    }
+                }]
+        };
+        $.table.init(options);
+    });
+    // 选择导出数据
+    function exportSelected() {
+        var ids = $.table.selectColumns("passId");
+        var dataParam = $("#formId").serializeArray();
+        var tipMsg = "确定导出所有数据吗？";
+        if ($.common.isNotEmpty(ids)) {
+            tipMsg = "确定导出勾选" + ids.length + "条数据吗？";
+            dataParam.push({"name": "selectPassIds", "value": ids});
+        }
+        $.modal.confirm(tipMsg, function () {
+            $.post(prefix + "/selectExport", dataParam, function (result) {
+                if (result.code == web_status.SUCCESS) {
+                    window.location.href = ctx + "common/download?fileName=" + encodeURI(result.msg) + "&delete=" + true;
+                } else {
+                    $.modal.alertError(result.msg);
+                }
+            });
+        });
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script  th:src="@{/js/webrtc/adapter.min.js}"></script>
+    <script  th:src="@{/js/webrtc/webrtcstreamer.js}"></script>
+    <script  th:src="@{/js/jquery.min.js}"></script>
+    <style>
+        video {
+            width: 300px;
+            height: 200px;
+        }
+    </style>
+</head>
+<body>
+<p>视频播放</p>
+<div>
+    <video th:id="video1" muted autoplay loop controls>muted controls disablePictureInPicture</video>
+    <video th:id="video2" muted autoplay loop controls>muted controls disablePictureInPicture</video>
+    <video th:id="video3" muted autoplay loop controls>muted controls disablePictureInPicture</video>
+    <video th:id="video4" muted autoplay loop controls>muted controls disablePictureInPicture</video>
+</div>
+<div>
+    <video th:id="video5" muted autoplay loop controls>muted controls disablePictureInPicture</video>
+    <video th:id="video6" muted autoplay loop controls>muted controls disablePictureInPicture</video>
+    <video th:id="video7" muted autoplay loop controls>muted controls disablePictureInPicture</video>
+    <video th:id="video8" muted autoplay loop controls>muted controls disablePictureInPicture</video>
+</div>
+<div>
+    <video th:id="video9" muted autoplay loop controls>muted controls disablePictureInPicture</video>
+    <video th:id="video10" muted autoplay loop controls>muted controls disablePictureInPicture</video>
+    <video th:id="video11" muted autoplay loop controls>muted controls disablePictureInPicture</video>
+    <video th:id="video12" muted autoplay loop controls>muted controls disablePictureInPicture</video>
+</div>
+<div>
+    <video th:id="video13" muted autoplay loop controls>muted controls disablePictureInPicture</video>
+    <video th:id="video14" muted autoplay loop controls>muted controls disablePictureInPicture</video>
+    <video th:id="video15" muted autoplay loop controls>muted controls disablePictureInPicture</video>
+    <video th:id="video16" muted autoplay loop controls>muted controls disablePictureInPicture</video>
+</div>
+
+<script th:inline="javascript">
+    var webRtcServer = null;
+    let webrtcUrl = "http://192.168.1.7:8000";
+    var videoMap = new Map();
+    window.onload = function () {
+
+    }
+    $('video').click(function (e) {
+        var ID = e.target.id;//获取当前点击事件的元素
+        console.log(ID);
+        if (videoMap.get(ID) != null) {
+            closeVideo(ID, videoMap.get(ID));
+        } else {
+            realViewHik(ID, 'admin', 'xzx12345', '192.168.1.104');
+        }
+    });
+    //页面加载时加载视频画面
+
+
+
+    //预览海康相机http://112.98.126.2:18000
+    function realViewHik(elem, username, password, ipaddr) {
+        console.log(webrtcUrl);
+        var rtspUrl = "rtsp://" + username + ":" + password + "@" + ipaddr + ":554/h264/ch1/main/av_stream"
+        console.log(rtspUrl);
+        webRtcServer = new WebRtcStreamer(elem, webrtcUrl);
+        var option = "rtptransport=tcp";
+        webRtcServer.connect(rtspUrl, null, option);
+        videoMap.set(elem, webRtcServer);
+    }
+
+    //预览大华相机
+    function realViewDh(elem, username, password, ipaddr) {
+        var rtspUrl = "rtsp://" + username + ":" + password + "@" + ipaddr + ":203/cam/realmonitor?channel=1&subtype=0";
+        // var rtspUrl="rtsp://192.168.1.7:8554/xzx";
+        console.log(rtspUrl);
+        webRtcServer = new WebRtcStreamer(elem, webrtcUrl);
+        var option = "rtptransport=udp";
+        webRtcServer.connect(rtspUrl, null, option);
+        videoMap.set(elem, webRtcServer);
+    }
+
+    function closeVideo(id, webrtc) {
+        webrtc.disconnect();
+        videoMap.delete(id);
+    }
+
+    //页面退出时销毁
+    window.onbeforeunload = function () {
+        webRtcServer.disconnect();
+    }
+</script>
+</body>
+</html>

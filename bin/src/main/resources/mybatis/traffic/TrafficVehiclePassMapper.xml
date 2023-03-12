@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.project.traffic.passInfo.mapper.TrafficVehiclePassMapper">
+    <resultMap type="com.ruoyi.project.traffic.crossinginfo.domain.TrafficCrossingInfo" id="TrafficCrossingInfoResult">
+        <result property="crossingId" column="crossing_id"/>
+        <result property="crossingName" column="crossing_name"/>
+    </resultMap>
+    <resultMap type="TrafficVehiclePass" id="TrafficVehiclePassResult">
+        <result property="passId" column="pass_id"/>
+        <result property="crossingId" column="crossing_id"/>
+        <result property="passTime" column="pass_time"/>
+        <result property="plateNo" column="plate_no"/>
+        <result property="plateColor" column="plate_color"/>
+        <result property="plateType" column="plate_type"/>
+        <result property="vehicleColor" column="vehicle_color"/>
+        <result property="vehicleType" column="vehicle_type"/>
+        <result property="laneNo" column="lane_no"/>
+        <result property="direction" column="direction"/>
+        <result property="plateImage" column="plate_image"/>
+        <result property="vehicleImage" column="vehicle_image"/>
+        <result property="createTime" column="create_time"/>
+        <association property="crossingInfo" resultMap="TrafficCrossingInfoResult">
+        </association>
+    </resultMap>
+
+    <sql id="selectTrafficVehiclePassVo">
+        select pass_id,
+               crossing_id,
+               pass_time,
+               plate_no,
+               plate_color,
+               plate_type,
+               vehicle_color,
+               vehicle_type,
+               lane_no,
+               direction,
+               plate_image,
+               vehicle_image,
+               create_time
+        from traffic_vehicle_pass
+    </sql>
+
+    <select id="selectTrafficVehiclePassList" parameterType="TrafficVehiclePass" resultMap="TrafficVehiclePassResult">
+        select p.pass_id,
+               p.crossing_id,
+               p.pass_time,
+               p.plate_no,
+               p.plate_color,
+               p.plate_type,
+               p.vehicle_color,
+               p.vehicle_type,
+               p.lane_no,
+               p.direction,
+               p.plate_image,
+               p.vehicle_image,
+               p.create_time,
+               c.crossing_name
+        from traffic_vehicle_pass p
+        left join traffic_crossing_info c ON p.crossing_id = c.crossing_id
+        <where>
+            <if test="crossingId != null ">and crossing_id = #{crossingId}</if>
+            <if test="crossingName != ''">and c.crossing_name = #{crossingName}</if>
+            <if test="passTimeStart != null ">and pass_time &gt;= #{passTimeStart}</if>
+            <if test="passTimeStop != null ">and pass_time &lt;= #{passTimeStop}</if>
+            <if test="plateNo != null  and plateNo != ''">and plate_no like concat('%', #{plateNo}, '%')</if>
+            <if test="plateColor != null  and plateColor != ''">and plate_color = #{plateColor}</if>
+            <if test="plateType != null  and plateType != ''">and plate_type = #{plateType}</if>
+            <if test="vehicleColor != null  and vehicleColor != ''">and vehicle_color = #{vehicleColor}</if>
+            <if test="vehicleType != null  and vehicleType != ''">and vehicle_type = #{vehicleType}</if>
+            <if test="laneNo != null  and laneNo != ''">and lane_no = #{laneNo}</if>
+            <if test="direction != null  and direction != ''">and direction = #{direction}</if>
+            <if test="selectPassIds != null">
+                pass_id in
+                <foreach item="passId" collection="selectPassIds" open="(" separator="," close=")">
+                    #{passId}
+                </foreach>
+            </if>
+        </where>
+    </select>
+
+    <select id="selectTrafficVehiclePassByPassId" parameterType="Long" resultMap="TrafficVehiclePassResult">
+        <include refid="selectTrafficVehiclePassVo"/>
+        where pass_id = #{passId}
+    </select>
+
+    <insert id="insertTrafficVehiclePass" parameterType="TrafficVehiclePass" useGeneratedKeys="true"
+            keyProperty="passId">
+        insert into traffic_vehicle_pass
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="crossingId != null">crossing_id,</if>
+            <if test="passTime != null">pass_time,</if>
+            <if test="plateNo != null">plate_no,</if>
+            <if test="plateColor != null">plate_color,</if>
+            <if test="plateType != null">plate_type,</if>
+            <if test="vehicleColor != null">vehicle_color,</if>
+            <if test="vehicleType != null">vehicle_type,</if>
+            <if test="laneNo != null">lane_no,</if>
+            <if test="direction != null">direction,</if>
+            <if test="plateImage != null">plate_image,</if>
+            <if test="vehicleImage != null">vehicle_image,</if>
+            <if test="createTime != null">create_time,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="crossingId != null">#{crossingId},</if>
+            <if test="passTime != null">#{passTime},</if>
+            <if test="plateNo != null">#{plateNo},</if>
+            <if test="plateColor != null">#{plateColor},</if>
+            <if test="plateType != null">#{plateType},</if>
+            <if test="vehicleColor != null">#{vehicleColor},</if>
+            <if test="vehicleType != null">#{vehicleType},</if>
+            <if test="laneNo != null">#{laneNo},</if>
+            <if test="direction != null">#{direction},</if>
+            <if test="plateImage != null">#{plateImage},</if>
+            <if test="vehicleImage != null">#{vehicleImage},</if>
+            <if test="createTime != null">#{createTime},</if>
+        </trim>
+    </insert>
+
+    <update id="updateTrafficVehiclePass" parameterType="TrafficVehiclePass">
+        update traffic_vehicle_pass
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="crossingId != null">crossing_id = #{crossingId},</if>
+            <if test="passTime != null">pass_time = #{passTime},</if>
+            <if test="plateNo != null">plate_no = #{plateNo},</if>
+            <if test="plateColor != null">plate_color = #{plateColor},</if>
+            <if test="plateType != null">plate_type = #{plateType},</if>
+            <if test="vehicleColor != null">vehicle_color = #{vehicleColor},</if>
+            <if test="vehicleType != null">vehicle_type = #{vehicleType},</if>
+            <if test="laneNo != null">lane_no = #{laneNo},</if>
+            <if test="direction != null">direction = #{direction},</if>
+            <if test="plateImage != null">plate_image = #{plateImage},</if>
+            <if test="vehicleImage != null">vehicle_image = #{vehicleImage},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+        </trim>
+        where pass_id = #{passId}
+    </update>
+
+    <delete id="deleteTrafficVehiclePassByPassId" parameterType="Long">
+        delete
+        from traffic_vehicle_pass
+        where pass_id = #{passId}
+    </delete>
+
+    <delete id="deleteTrafficVehiclePassByPassIds" parameterType="String">
+        delete from traffic_vehicle_pass where pass_id in
+        <foreach item="passId" collection="array" open="(" separator="," close=")">
+            #{passId}
+        </foreach>
+    </delete>
+
+</mapper>

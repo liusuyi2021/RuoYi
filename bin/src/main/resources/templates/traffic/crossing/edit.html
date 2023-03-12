@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:include="include :: header('修改卡口信息')"/>
+</head>
+<body class="white-bg">
+<div class="wrapper wrapper-content animated fadeInRight ibox-content">
+    <form class="form-horizontal m" id="form-crossinginfo-edit" th:object="${trafficCrossingInfo}">
+        <input name="crossingId" th:field="*{crossingId}" type="hidden">
+        <input name="deptId" type="hidden" th:field="*{deptId}" id="treeId"/>
+        <div class="form-group">
+            <label class="col-sm-3 control-label">归属部门：</label>
+            <div class="col-sm-8">
+                <div class="input-group">
+                    <input name="deptName" onclick="selectDeptTree()" id="treeName" type="text"
+                           th:field="*{dept.deptName}"
+                           class="form-control" disabled readonly >
+                    <span class="input-group-addon"><i class="fa fa-search"></i></span>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label">卡口编号：</label>
+            <div class="col-sm-8">
+                <input name="crossingBh" th:field="*{crossingBh}" class="form-control" type="text">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label">卡口名称：</label>
+            <div class="col-sm-8">
+                <input name="crossingName" th:field="*{crossingName}" class="form-control" type="text">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label">线路数：</label>
+            <div class="col-sm-8">
+                <input name="laneNum" th:field="*{laneNum}" class="form-control" type="text">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label">小车限速：</label>
+            <div class="col-sm-8">
+                <input name="smallLimitSpeed" th:field="*{smallLimitSpeed}" class="form-control" type="text">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label">大车限速：</label>
+            <div class="col-sm-8">
+                <input name="bigLimitSpeed" th:field="*{bigLimitSpeed}" class="form-control" type="text">
+            </div>
+        </div>
+        <div th:id="tdas" class="form-group">
+            <label class="col-sm-3 control-label">接入服务器：</label>
+            <div class="col-sm-8">
+                <select name="tdasServerId" class="form-control m-b">
+                    <option th:each="tdas:${tdasList}" th:value="${tdas.serverId}" th:text="${tdas.serverName}"
+                            th:selected="${trafficCrossingInfo.trafficServerInfo.serverName.contains(tdas.serverName)}"></option>
+                </select>
+            </div>
+        </div>
+    </form>
+</div>
+<th:block th:include="include :: footer"/>
+<th:block th:include="include :: select2-css"/>
+<th:block th:include="include :: select2-js"/>
+<!--<th:block th:include="include :: jquery-cxselect-js"/>-->
+
+<script th:inline="javascript">
+    var prefix = ctx + "traffic/crossing";
+    $("#form-crossinginfo-edit").validate({
+        focusCleanup: true
+    });
+
+    function submitHandler() {
+        if ($.validate.form()) {
+            $.operate.save(prefix + "/edit", $('#form-crossinginfo-edit').serialize());
+        }
+    }
+
+    /* 卡口管理-修改-选择部门树 */
+    function selectDeptTree() {
+        var deptId = $.common.isEmpty($("#treeId").val()) ? "100" : $("#treeId").val();
+        var url = ctx + "system/dept/selectDeptTree/" + deptId;
+        var options = {
+            title: '选择部门',
+            width: "380",
+            url: url,
+            callBack: doSubmit
+        };
+        $.modal.openOptions(options);
+    }
+
+    function doSubmit(index, layero) {
+        var body = $.modal.getChildFrame(index);
+        $("#treeId").val(body.find('#treeId').val());
+        $("#treeName").val(body.find('#treeName').val());
+        $.modal.close(index);
+    }
+</script>
+</body>
+</html>

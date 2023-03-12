@@ -1,0 +1,97 @@
+@charset "utf-8";
+* 
+{
+    margin:0;
+    padding:0;
+}
+
+/*操作信息*/
+.operate
+{
+    width:300px;
+    padding-left:10px;
+    padding-right:10px;
+    padding-bottom:10px;
+    border:1px solid #7F9DB9;
+    font-size:10px;
+}
+.operate .opinfo
+{
+    height:150px;
+    border:1px solid #7F9DB9;
+    overflow:auto;
+}
+/*事件回调*/
+.callback
+{
+    width:300px;
+    padding:10px;
+    margin-left:10px;
+    border:1px solid #7F9DB9;
+    font-size:10px;
+}
+.callback .cbinfo
+{
+    height:114px;
+    border:1px solid #7F9DB9;
+    overflow:auto;
+}
+/*IP解析*/
+.ipparse
+{
+    width:450px;
+    padding:10px;
+    margin-left:10px;
+    border:1px solid #7F9DB9;
+}
+.ipparse .tt
+{
+    width:85px;
+}
+.ipparse .txt
+{
+    width:130px;
+}
+.ipparse .btn
+{
+    width:90px;
+    height:22px;
+    line-height:18px;
+}
+.ipparse .sel
+{
+    width:130px;
+}
+/*绘图*/
+.draw
+{
+    width:450px;
+    padding:10px;
+    padding-top:0;
+    margin-left:10px;
+    border:1px solid #7F9DB9;
+}
+.draw .tt
+{
+    width:60px;
+}
+.draw .txt
+{
+    width:140px;
+}
+.draw .btn
+{
+    width:70px;
+    height:22px;
+    line-height:18px;
+}
+.draw .btn2
+{
+    width:100px;
+    height:22px;
+    line-height:18px;
+}
+.draw .sel
+{
+    width:105px;
+}

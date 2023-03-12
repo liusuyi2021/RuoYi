@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.project.traffic.alarmInfo.mapper.TrafficVehicleAlarmMapper">
+
+    <resultMap type="com.ruoyi.project.traffic.crossinginfo.domain.TrafficCrossingInfo" id="TrafficCrossingInfoResult">
+        <result property="crossingId" column="crossing_id"/>
+        <result property="crossingName" column="crossing_name"/>
+    </resultMap>
+    <resultMap type="TrafficVehicleAlarm" id="TrafficVehicleAlarmResult">
+        <result property="vehicleColor" column="vehicle_color"/>
+        <result property="vehicleType" column="vehicle_type"/>
+        <result property="laneNo" column="lane_no"/>
+        <result property="direction" column="direction"/>
+        <result property="plateImage" column="plate_image"/>
+        <result property="vehicleImage" column="vehicle_image"/>
+        <result property="alarmId" column="alarm_id"/>
+        <result property="crossingId" column="crossing_id"/>
+        <result property="alarmTime" column="alarm_time"/>
+        <result property="plateNo" column="plate_no"/>
+        <result property="plateColor" column="plate_color"/>
+        <result property="plateType" column="plate_type"/>
+        <result property="alarmCode" column="alarm_code"/>
+        <result property="createTime" column="create_time"/>
+        <result property="codeCount" column="code_count"/>
+        <association property="crossingInfo" resultMap="TrafficCrossingInfoResult"/>
+    </resultMap>
+
+    <sql id="selectTrafficVehicleAlarmVo">
+        select vehicle_color,
+               vehicle_type,
+               lane_no,
+               direction,
+               plate_image,
+               vehicle_image,
+               alarm_id,
+               crossing_id,
+               alarm_time,
+               plate_no,
+               plate_color,
+               plate_type,
+               alarm_code,
+               create_time
+        from traffic_vehicle_alarm
+    </sql>
+
+    <sql id="selectTrafficVehicleAlarmPie">
+        SELECT alarm_code, count(alarm_code) as code_count
+        from traffic_vehicle_alarm
+        GROUP BY alarm_code
+        ORDER BY code_count desc limit 5
+        OFFSET 1
+    </sql>
+    <select id="selectTrafficVehicleAlarmCodeList" resultMap="TrafficVehicleAlarmResult">
+        <include refid="selectTrafficVehicleAlarmPie"/>
+    </select>
+
+    <select id="selectTrafficVehicleAlarmList" parameterType="TrafficVehicleAlarm"
+            resultMap="TrafficVehicleAlarmResult">
+        select p.alarm_id,
+        p.crossing_id,
+        p.alarm_time,
+        p.plate_no,
+        p.plate_color,
+        p.plate_type,
+        p.vehicle_color,
+        p.vehicle_type,
+        p.lane_no,
+        p.direction,
+        p.plate_image,
+        p.vehicle_image,
+        p.create_time,
+        c.crossing_name,
+        p.alarm_code
+        from traffic_vehicle_alarm p
+        left join traffic_crossing_info c ON p.crossing_id = c.crossing_id
+        <where>
+            <if test="crossingId != null ">and crossing_id = #{crossingId}</if>
+            <if test="crossingName != ''">and c.crossing_name = #{crossingName}</if>
+            <if test="alarmTimeStart != null ">and alarm_time &gt;= #{alarmTimeStart}</if>
+            <if test="alarmTimeStop != null ">and alarm_time &lt;= #{alarmTimeStop}</if>
+            <if test="plateNo != null  and plateNo != ''">and plate_no like concat('%', #{plateNo}, '%')</if>
+            <if test="plateColor != null  and plateColor != ''">and plate_color = #{plateColor}</if>
+            <if test="plateType != null  and plateType != ''">and plate_type = #{plateType}</if>
+            <if test="vehicleColor != null  and vehicleColor != ''">and vehicle_color = #{vehicleColor}</if>
+            <if test="vehicleType != null  and vehicleType != ''">and vehicle_type = #{vehicleType}</if>
+            <if test="laneNo != null  and laneNo != ''">and lane_no = #{laneNo}</if>
+            <if test="direction != null  and direction != ''">and direction = #{direction}</if>
+            <if test="alarmCode != null  and alarmCode != ''">and alarm_code = #{alarmCode}</if>
+            <if test="selectAlarmIds != null">
+                alarm_id in
+                <foreach item="alarmId" collection="selectAlarmIds" open="(" separator="," close=")">
+                    #{alarmId}
+                </foreach>
+            </if>
+        </where>
+    </select>
+
+    <select id="selectTrafficVehicleAlarmByAlarmId" parameterType="Long" resultMap="TrafficVehicleAlarmResult">
+        <include refid="selectTrafficVehicleAlarmVo"/>
+        where alarm_id = #{alarmId}
+    </select>
+
+    <insert id="insertTrafficVehicleAlarm" parameterType="TrafficVehicleAlarm" useGeneratedKeys="true"
+            keyProperty="alarmId">
+        insert into traffic_vehicle_alarm
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="vehicleColor != null">vehicle_color,</if>
+            <if test="vehicleType != null">vehicle_type,</if>
+            <if test="laneNo != null">lane_no,</if>
+            <if test="direction != null">direction,</if>
+            <if test="plateImage != null">plate_image,</if>
+            <if test="vehicleImage != null">vehicle_image,</if>
+            <if test="crossingId != null">crossing_id,</if>
+            <if test="alarmTime != null">alarm_time,</if>
+            <if test="plateNo != null">plate_no,</if>
+            <if test="plateColor != null">plate_color,</if>
+            <if test="plateType != null">plate_type,</if>
+            <if test="alarmCode != null">alarm_code,</if>
+            <if test="createTime != null">create_time,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="vehicleColor != null">#{vehicleColor},</if>
+            <if test="vehicleType != null">#{vehicleType},</if>
+            <if test="laneNo != null">#{laneNo},</if>
+            <if test="direction != null">#{direction},</if>
+            <if test="plateImage != null">#{plateImage},</if>
+            <if test="vehicleImage != null">#{vehicleImage},</if>
+            <if test="crossingId != null">#{crossingId},</if>
+            <if test="alarmTime != null">#{alarmTime},</if>
+            <if test="plateNo != null">#{plateNo},</if>
+            <if test="plateColor != null">#{plateColor},</if>
+            <if test="plateType != null">#{plateType},</if>
+            <if test="alarmCode != null">#{alarmCode},</if>
+            <if test="createTime != null">#{createTime},</if>
+        </trim>
+    </insert>
+
+    <update id="updateTrafficVehicleAlarm" parameterType="TrafficVehicleAlarm">
+        update traffic_vehicle_alarm
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="vehicleColor != null">vehicle_color = #{vehicleColor},</if>
+            <if test="vehicleType != null">vehicle_type = #{vehicleType},</if>
+            <if test="laneNo != null">lane_no = #{laneNo},</if>
+            <if test="direction != null">direction = #{direction},</if>
+            <if test="plateImage != null">plate_image = #{plateImage},</if>
+            <if test="vehicleImage != null">vehicle_image = #{vehicleImage},</if>
+            <if test="crossingId != null">crossing_id = #{crossingId},</if>
+            <if test="alarmTime != null">alarm_time = #{alarmTime},</if>
+            <if test="plateNo != null">plate_no = #{plateNo},</if>
+            <if test="plateColor != null">plate_color = #{plateColor},</if>
+            <if test="plateType != null">plate_type = #{plateType},</if>
+            <if test="alarmCode != null">alarm_code = #{alarmCode},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+        </trim>
+        where alarm_id = #{alarmId}
+    </update>
+
+    <delete id="deleteTrafficVehicleAlarmByAlarmId" parameterType="Long">
+        delete
+        from traffic_vehicle_alarm
+        where alarm_id = #{alarmId}
+    </delete>
+
+    <delete id="deleteTrafficVehicleAlarmByAlarmIds" parameterType="String">
+        delete from traffic_vehicle_alarm where alarm_id in
+        <foreach item="alarmId" collection="array" open="(" separator="," close=")">
+            #{alarmId}
+        </foreach>
+    </delete>
+
+</mapper>

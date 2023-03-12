@@ -1,0 +1,1011 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:include="include :: header('视频监控')"/>
+    <th:block th:include="include :: layout-latest-css"/>
+    <th:block th:include="include :: ztree-css"/>
+    <th:block th:include="include :: select2-css"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta http-equiv="Pragma" content="no-cache"/>
+    <meta http-equiv="Cache-Control" content="no-cache, must-revalidate"/>
+    <meta http-equiv="Expires" content="0"/>
+    <link type='text/css' href='../view/demo.css?version=' rel='stylesheet'/>
+    <style type="text/css">
+        .col-sm-8 plugin {
+            width: 100%;
+            height: auto;
+        }
+        .btn btn-outline btn-primary btn-xs {
+            width: 50px;
+        }
+        fieldset {
+            margin: 0 auto;
+            float: none;
+        }
+        table, td, th {
+            margin: 10px auto;
+        }
+        td, th {
+            padding: 1px 1px;
+        }
+        .ztree li span.button.controlunit_ico_open{
+            margin-right: 2px;
+            width: 16px;/* 图标大小*/
+            height: 16px;
+            background-image: url('/ico/tree_all_icons.gif');
+            background-position: left -16px;
+        }
+        .ztree li span.button.controlunit_ico_close{
+            margin-right: 2px;
+            width: 16px;/* 图标大小*/
+            height: 16px;
+            background-image: url('/ico/tree_all_icons.gif');
+            background-position: left -16px;
+        }
+        .ztree li span.button.stopLive_ico_docu{
+            margin-right: 2px;
+            width: 16px;/* 图标大小*/
+            height: 16px;
+            background-image: url('/ico/tree_all_icons.gif');
+            background-position: left -208px;
+        }
+        .ztree li span.button.startLive_ico_docu{
+            margin-right: 2px;
+            width: 16px;/* 图标大小*/
+            height: 16px;
+            background-image: url('/ico/tree_all_icons.gif');
+            background-position: left -224px;
+        }
+    </style>
+</head>
+
+<body class="gray-bg">
+<div class="ui-layout-west">
+    <div class="box box-main">
+        <div class="box-header">
+            <div class="box-title">
+                <i class="fa icon-grid"></i> 组织机构
+            </div>
+            <div class="box-tools pull-right">
+                <a type="button" class="btn btn-box-tool" href="#" onclick="preview()" title="管理部门"><i
+                        class="fa fa-edit"></i></a>
+                <button type="button" class="btn btn-box-tool" id="btnExpand" title="展开" style="display:none;"><i
+                        class="fa fa-chevron-up"></i></button>
+                <button type="button" class="btn btn-box-tool" id="btnCollapse" title="折叠"><i
+                        class="fa fa-chevron-down"></i></button>
+                <button type="button" class="btn btn-box-tool" id="btnRefresh" title="刷新部门"><i
+                        class="fa fa-refresh"></i></button>
+            </div>
+        </div>
+        <div class="ui-layout-content">
+            <div id="tree" class="ztree"></div>
+        </div>
+    </div>
+</div>
+<div class="ui-layout-center" id="ui-layout-center">
+    <div class="container-div">
+        <div class="row">
+            <div id="divPlugin" class="col-sm-8 plugin"></div>
+            <div>
+                <fieldset class="operate" >
+                    <legend>操作信息</legend>
+                    <div id="opinfo" class="opinfo"></div>
+                </fieldset>
+                <fieldset class="callback" style="visibility:hidden; display:none;">
+                    <legend>事件回调信息</legend>
+                    <div id="cbinfo" class="cbinfo"></div>
+                </fieldset>
+                <div>
+                    <h3>云台控制</h3>
+                    <fieldset class="ptz">
+                        <table>
+                            <tr>
+                                <td class="text-center" colspan="3">
+                                    <button type="button" class="btn btn-outline btn-primary btn-xs"
+                                            onmousedown="mouseDownPTZControl(1)" onmouseup="mouseUpPTZControl(1)">
+                                        <i class="fa fa-arrow-up"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="text-center">
+                                    <button type="button" class="btn btn-outline btn-primary btn-xs"
+                                            onmousedown="mouseDownPTZControl(3)" onmouseup="mouseUpPTZControl(3)">
+                                        <i class="fa fa-arrow-left"></i>
+                                    </button>
+                                </td>
+                                <td class="text-center">
+                                    <button type="button" class="btn btn-outline btn-primary btn-xs"
+                                            onmousedown="mouseDownPTZControl(9)">自动
+                                    </button>
+                                </td>
+                                <td class="text-center">
+                                    <button type="button" class="btn btn-outline btn-primary btn-xs"
+                                            onmousedown="mouseDownPTZControl(4)" onmouseup="mouseUpPTZControl(4)">
+                                        <i class="fa fa-arrow-right"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="3" class="text-center">
+                                    <button type="button" class="btn btn-outline btn-primary btn-xs"
+                                            onmousedown="mouseDownPTZControl(2)" onmouseup="mouseUpPTZControl(2)">
+                                        <i class="fa fa-arrow-down"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        </table>
+                        <table>
+                            <tr>
+                                <td style="width:70px" >
+                                    <label>云台速度:</label>
+                                </td >
+                                <td style="width:10px">
+                                    <div class="col-sm-4">
+                                        <select id="ptzspeed">
+                                            <option value="1" >1</option>
+                                            <option value="2">2</option>
+                                            <option value="3">3</option>
+                                            <option value="4">4</option>
+                                            <option value="5"selected>5</option>
+                                            <option value="6">6</option>
+                                            <option value="7">7</option>
+                                            <option value="7">8</option>
+                                        </select>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="width:70px" >
+                                    <label>预置点号:</label>
+                                </td>
+                                <td style="width:10px">
+                                    <div class="col-sm-4">
+                                        <select id="preset">
+                                            <option value="1" selected>1</option>
+                                            <option value="2">2</option>
+                                            <option value="3">3</option>
+                                            <option value="4">4</option>
+                                            <option value="5">5</option>
+                                            <option value="6">6</option>
+                                            <option value="7">7</option>
+                                            <option value="7">8</option>
+                                        </select>
+                                    </div>
+                                </td>
+                                <td style="width:10px">
+                                    <button style="vertical-align: top;" type="button"
+                                            class="btn btn-outline btn-primary btn-xs"
+                                            onclick="clickSetPreset()">设置
+                                    </button>
+                                </td>
+                                <td style="width:10px">
+                                    <button style="vertical-align: top;" type="button"
+                                            class="btn btn-outline btn-primary btn-xs"
+                                            onclick="clickGoPreset()">调用
+                                    </button>
+                                </td>
+                            </tr>
+                        </table>
+                        <table>
+                            <tr>
+                                <td class="tt">
+                                    <button type="button" class="btn btn-outline btn-primary btn-xs"
+                                            onmousedown="PTZZoomIn()" onmouseup="PTZZoomStop()">变倍+
+                                    </button>
+                                </td>
+                                <td>
+                                    <button type="button" class="btn btn-outline btn-primary btn-xs"
+                                            onmousedown="PTZZoomout()" onmouseup="PTZZoomStop()">变倍-
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="tt">
+                                    <button type="button" class="btn btn-outline btn-primary btn-xs" value="变焦+"
+                                            onmousedown="PTZFocusIn()" onmouseup="PTZFoucusStop()">变焦+
+                                    </button>
+                                </td>
+                                <td>
+                                    <button type="button" class="btn btn-outline btn-primary btn-xs" value="变焦-"
+                                            onmousedown="PTZFoucusOut()" onmouseup="PTZFoucusStop()">变焦-
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="tt">
+                                    <input type="button" class="btn btn-outline btn-primary btn-xs" value="光圈+"
+                                           onmousedown="PTZIrisIn()" onmouseup="PTZIrisStop()">
+                                </td>
+                                <td>
+                                    <input type="button" class="btn btn-outline btn-primary btn-xs" value="光圈-"
+                                           onmousedown="PTZIrisOut()" onmouseup="PTZIrisStop()">
+                                </td>
+                            </tr>
+                        </table>
+                        <div>
+                            画面分屏:
+                            <select style="width:80px" onchange="changeWndNum(this.value)">
+                                <option value="1">1x1</option>
+                                <option value="2" selected>2x2</option>
+                                <option value="3">3x3</option>
+                                <option value="4">4x4</option>
+                            </select>
+                        </div>
+                        <button type="button" class="btn btn-outline btn-primary btn-xs"
+                                onclick="clickGetLocalCfg()">本地参数
+                        </button>
+                        <button type="button" class="btn btn-outline btn-primary btn-xs"
+                                onclick="clickGetDeviceInfo()">
+                            相机信息
+                        </button>
+                        <button type="button" class="btn btn-outline btn-primary btn-xs"
+                                onclick="clickStopRealPlay()">
+                            停止预览
+                        </button>
+                        <button type="button" class="btn btn-outline btn-primary btn-xs"
+                                onclick="clickStopAllRealPlay()">
+                            全部停止
+                        </button>
+                        <button type="button" class="btn btn-outline btn-primary btn-xs"
+                                onclick="clickCapturePic()">
+                            抓图
+                        </button>
+                        <div>
+                            <input type="button" class="btn btn-outline btn-primary btn-xs" value="开始录像"
+                                   onclick="clickStartRecord('realplay');"/>
+                            <input type="button" class="btn btn-outline btn-primary btn-xs" value="停止录像"
+                                   onclick="clickStopRecord('realplay');"/>
+                            <input type="button" class="btn btn-outline btn-primary btn-xs" value="开始对讲"
+                                   onclick="clickGetAudioInfo();"/>
+                            <input type="button" class="btn btn-outline btn-primary btn-xs" value="停止对讲"
+                                   onclick="clickStopVoiceTalk();"/>
+                            <input type="button" class="btn btn-outline btn-primary btn-xs" value="远程配置"
+                                   onclick="clickRemoteConfig();"/>
+                        </div>
+                    </fieldset>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+<script src="../view/jquery-1.7.1.min.js"></script>
+<script src="../view/codebase/webVideoCtrl.js"></script>
+<th:block th:include="include :: footer"/>
+<th:block th:include="include :: layout-latest-js"/>
+<th:block th:include="include :: ztree-js"/>
+<script th:inline="javascript">
+    var szInfo = 0;
+    var map = new Map();
+    var nodeMap=new Map();
+    var loginDevArray = new Array();//登录数组
+    //初始化
+    $(function () {
+        var panehHidden = false;
+        if ($(this).width() < 769) {
+            panehHidden = true;
+        }
+        $('body').layout({initClosed: panehHidden, west__size: 185});
+        // 回到顶部绑定
+        if ($.fn.toTop !== undefined) {
+            var opt = {
+                win: $('.ui-layout-center'),
+                doc: $('.ui-layout-center')
+            };
+            $('#scroll-up').toTop(opt);
+        }
+        queryDeptTree();
+        // 检查插件是否已经安装过
+        var iRet = WebVideoCtrl.I_CheckPluginInstall();
+        if (-1 == iRet) {
+            alert("您还未安装过插件，双击开发包目录里的WebComponentsKit.exe安装！");
+            return;
+        }
+
+        /*获取高度 */
+        /*var h = document.getElementById('ui-layout-center').clientHeight;*/
+        var h = $("#ui-layout-center").css('height');
+        //获取宽度
+        /*var w = document.getElementById('ui-layout-center').clientWidth;*/
+        var w = $("#ui-layout-center").css('width');
+        var oPlugin = {
+            iWidth: "100%",       // plugin width
+            iHeight: h            // plugin height
+        };
+
+
+        // 初始化插件参数及插入插件
+        WebVideoCtrl.I_InitPlugin(oPlugin.iWidth, oPlugin.iHeight, {
+            bWndFull: true,//是否支持单窗口双击全屏，默认支持 true:支持 false:不支持
+            iWndowType: 2,
+            cbSelWnd: function (xmlDoc) {
+                g_iWndIndex = parseInt($(xmlDoc).find("SelectWnd").eq(0).text(), 10);
+                /*szInfo = "当前选择的窗口编号：" + g_iWndIndex;*/
+                szInfo = g_iWndIndex;
+                showCBInfo(szInfo);
+            },
+            cbInitPluginComplete: function () {
+                WebVideoCtrl.I_InsertOBJECTPlugin("divPlugin");
+
+                // 检查插件是否最新
+                if (-1 == WebVideoCtrl.I_CheckPluginVersion()) {
+                    alert("检测到新的插件版本，双击开发包目录里的WebComponentsKit.exe升级！");
+                    return;
+                }
+
+
+            }
+        });
+
+        // 关闭浏览器
+        $(window).unload(function () {
+            WebVideoCtrl.I_Stop();
+        });
+    });
+
+    //预览
+    function queryDeptTree() {
+        var url = ctx+"system/dept/treeDataView";
+        var options = {
+            url: url,
+            expandLevel: 2,
+            onDblClick: zOnClick
+        };
+        $.tree.init(options);
+        function zOnClick(even, treeId, treeNode) {
+            var oWndInfo = WebVideoCtrl.I_GetWindowStatus(szInfo);
+            var channelid = parseInt(treeNode.chanNum, 10);
+            var chanid = channelid < 17 ? channelid : (channelid - 14);
+            var oLiveView = {
+                iProtocol: 1,             // protocol 1：http, 2:https
+                szIP: treeNode.ipAddr,    // protocol ip
+                szPort: 80,               // protocol port
+                szUsername: treeNode.userName,     // device username
+                szPassword: treeNode.passWord, // device password
+                iStreamType: 1,           // stream 1：main stream  2：sub-stream  3：third stream  4：transcode stream
+                iChannelID: chanid,       // channel no
+                bZeroChannel: false       // zero channel
+            };
+            var szDeviceIdentify = oLiveView.szIP + "_" + oLiveView.szPort;
+            var startRealPlay = function () {
+                if (loginDevArray.indexOf(oLiveView.szIP) < 0) {// 未登录，先登录后再预览
+                    WebVideoCtrl.I_Login(oLiveView.szIP, oLiveView.iProtocol, oLiveView.szPort, oLiveView.szUsername, oLiveView.szPassword, {
+                        success: function (xmlDoc) {
+                            loginDevArray.push(oLiveView.szIP);
+                            // 开始预览
+                            showOPInfo(szDeviceIdentify + " 登录成功！");
+                            setTimeout(function () {
+                                WebVideoCtrl.I_StartRealPlay(szDeviceIdentify, {
+                                    iWndIndex: szInfo,
+                                    iStreamType: oLiveView.iStreamType,
+                                    iChannelID: oLiveView.iChannelID,
+                                    bZeroChannel: oLiveView.bZeroChannel,
+                                    success: function () {
+                                        var param = new Object();
+                                        param.szDeviceIdentify = szDeviceIdentify;
+                                        param.channelId = oLiveView.iChannelID;
+                                        map.set(szInfo, param);
+                                        nodeMap.set(szInfo,treeNode);
+                                        updateTreeNodeIcon(treeNode,"startLive");
+                                        showOPInfo(szDeviceIdentify + " 预览成功！");
+                                    },
+                                    error: function () {
+                                        showOPInfo(szDeviceIdentify + " 预览失败！");
+                                    }
+                                });
+                            }, 500);
+                        },
+                        error: function (status, xmlDoc) {
+                            showOPInfo(szDeviceIdentify + " 登录失败！", status, xmlDoc);
+                        }
+                    });
+                } else {
+                    WebVideoCtrl.I_StartRealPlay(szDeviceIdentify, {
+                        iWndIndex: szInfo,
+                        iStreamType: oLiveView.iStreamType,
+                        iChannelID: oLiveView.iChannelID,
+                        bZeroChannel: oLiveView.bZeroChannel,
+                        success: function () {
+                            var param = new Object();
+                            param.szDeviceIdentify = szDeviceIdentify;
+                            param.channelId = oLiveView.iChannelID;
+                            map.set(szInfo, param);
+                            nodeMap.set(szInfo,treeNode);
+                            updateTreeNodeIcon(treeNode,"startLive");
+                            showOPInfo(szDeviceIdentify + " 预览成功！");
+                        },
+                        error: function () {
+                            showOPInfo(szDeviceIdentify + " 预览失败！");
+                        }
+                    });
+                }
+            }
+            if (oWndInfo != null) {// 已经在播放了，先停止
+                //updateTreeNodeIcon(treeNode,"stopLive");
+                clickStopRealPlay();
+
+            } else {
+                startRealPlay();
+            }
+        }
+    }
+    //更新预览通道图标
+    function updateTreeNodeIcon(treeNode,icon){
+        var treeObj = $.fn.zTree.getZTreeObj("tree");
+        treeNode.iconSkin=icon;
+        treeObj.updateNode(treeNode);
+    }
+    // 获取本地参数
+    function clickGetLocalCfg() {
+        var xmlDoc = WebVideoCtrl.I_GetLocalCfg();
+        if (xmlDoc != null) {
+            var arrStr = [];
+            arrStr.push("播放库缓冲区大小:" + $(xmlDoc).find("BuffNumberType").eq(0).text() + "\r\n");
+            arrStr.push("播放窗口模式 (0-充满 1-4:3 2-16:9):" + $(xmlDoc).find("PlayWndType").eq(0).text() + "\r\n");
+            arrStr.push("是否开启规则信息:" + $(xmlDoc).find("IVSMode").eq(0).text() + "\r\n");
+            arrStr.push("抓图格式:" + $(xmlDoc).find("CaptureFileFormat").eq(0).text() + "\r\n");
+            arrStr.push("录像打包大小 (0-256M 1-512M 2-1G):" + $(xmlDoc).find("PackgeSize").eq(0).text() + "\r\n");
+            arrStr.push("录像文件保存路径:" + $(xmlDoc).find("RecordPath").eq(0).text() + "\r\n");
+            arrStr.push("回放下载文件保存路径:" + $(xmlDoc).find("DownloadPath").eq(0).text() + "\r\n");
+            arrStr.push("抓图文件保存路径:" + $(xmlDoc).find("CapturePath").eq(0).text() + "\r\n");
+            arrStr.push("回放抓图文件保存路径:" + $(xmlDoc).find("PlaybackPicPath").eq(0).text() + "\r\n");
+            arrStr.push("设备抓图文件保存路径:" + $(xmlDoc).find("DeviceCapturePath").eq(0).text() + "\r\n");
+            arrStr.push("回放录像文件保存路径:" + $(xmlDoc).find("PlaybackFilePath").eq(0).text() + "\r\n");
+            arrStr.push("协议类型 (0-TCP 2-UDP):" + $(xmlDoc).find("ProtocolType").eq(0).text() + "\r\n");
+            showOPInfo("本地配置获取成功！");
+            alert(arrStr.join(""));
+        } else {
+            showOPInfo("本地配置获取失败！");
+        }
+    }
+
+    // 停止预览
+    function clickStopRealPlay() {
+        var oWndInfo = WebVideoCtrl.I_GetWindowStatus(szInfo);
+        if (oWndInfo != null) {
+            var msg = "";
+            WebVideoCtrl.I_Stop({
+                success: function () {
+                    map.delete(szInfo);
+                    var node=nodeMap.get(szInfo);
+                    updateTreeNodeIcon(node,"stopLive");
+                    nodeMap.delete(szInfo);
+                    var msg = "停止预览成功！";
+                    showOPInfo(oWndInfo.szDeviceIdentify + " " + msg);
+                },
+                error: function () {
+                    msg = "停止预览失败！";
+                    showOPInfo(oWndInfo.szDeviceIdentify + " " + msg);
+                }
+            });
+        }
+    }
+
+    // 全部停止预览
+    function clickStopAllRealPlay() {
+        nodeMap.forEach(function (value, key, map) {
+            var oWndInfo = WebVideoCtrl.I_GetWindowStatus(key);
+            if (oWndInfo != null) {
+                WebVideoCtrl.I_Stop({
+                    iWndIndex: key,
+                    success: function () {
+                        var node=nodeMap.get(key);
+                        updateTreeNodeIcon(node,"stopLive");
+                        nodeMap.delete(key);
+                        showOPInfo(oWndInfo.szDeviceIdentify + " " + "停止预览成功！");
+                    },
+                    error: function () {
+                        showOPInfo(oWndInfo.szDeviceIdentify + " " + "停止预览失败！");
+                    }
+                });
+            }
+        })
+    }
+
+    // 退出
+    function clickLogout(sz) {
+
+        var szDeviceIdentify = map.get(sz).szDeviceIdentify;
+        if (null == szDeviceIdentify) {
+            return;
+        }
+        var iRet = WebVideoCtrl.I_Logout(szDeviceIdentify);
+        if (0 == iRet) {
+            showOPInfo(szDeviceIdentify + " " + "退出成功！");
+            map.delete(sz);
+        } else {
+            showOPInfo(szDeviceIdentify + " " + "退出失败！");
+        }
+    }
+
+    $('#btnExpand').click(function () {
+        $._tree.expandAll(true);
+        $(this).hide();
+        $('#btnCollapse').show();
+    });
+    $('#btnCollapse').click(function () {
+        $._tree.expandAll(false);
+        $(this).hide();
+        $('#btnExpand').show();
+    });
+    $('#btnRefresh').click(function () {
+        queryDeptTree();
+    });
+
+    // 窗口分割数
+    function changeWndNum(iType) {
+        iType = parseInt(iType, 10);
+        WebVideoCtrl.I_ChangeWndNum(iType);
+    }
+
+    // 获取设备信息
+    function clickGetDeviceInfo() {
+        var szDeviceIdentify = map.get(szInfo).szDeviceIdentify;
+        showOPInfo(szDeviceIdentify);
+        if (null == szDeviceIdentify) {
+            return;
+        }
+        WebVideoCtrl.I_GetDeviceInfo(szDeviceIdentify, {
+            success: function (xmlDoc) {
+                var arrStr = [];
+                arrStr.push("设备名称：" + $(xmlDoc).find("deviceName").eq(0).text() + "\r\n");
+                arrStr.push("设备ID：" + $(xmlDoc).find("deviceID").eq(0).text() + "\r\n");
+                arrStr.push("型号：" + $(xmlDoc).find("model").eq(0).text() + "\r\n");
+                arrStr.push("设备序列号：" + $(xmlDoc).find("serialNumber").eq(0).text() + "\r\n");
+                arrStr.push("MAC地址：" + $(xmlDoc).find("macAddress").eq(0).text() + "\r\n");
+                arrStr.push("主控版本：" + $(xmlDoc).find("firmwareVersion").eq(0).text() + " " + $(xmlDoc).find("firmwareReleasedDate").eq(0).text() + "\r\n");
+                arrStr.push("编码版本：" + $(xmlDoc).find("encoderVersion").eq(0).text() + " " + $(xmlDoc).find("encoderReleasedDate").eq(0).text() + "\r\n");
+
+                showOPInfo(szDeviceIdentify + " 获取设备信息成功！");
+                alert(arrStr.join(""));
+            },
+            error: function (status, xmlDoc) {
+                showOPInfo(szDeviceIdentify + " 获取设备信息失败！", status, xmlDoc);
+            }
+        });
+    }
+
+    // PTZ控制 9为自动，1,2,3,4,5,6,7,8为方向PTZ
+    var g_bPTZAuto = false;
+
+    function mouseDownPTZControl(iPTZIndex) {
+        var oWndInfo = WebVideoCtrl.I_GetWindowStatus(szInfo),
+            //bZeroChannel = $("#channels option").eq($("#channels").get(0).selectedIndex).attr("bZero") == "true" ? true : false,
+            iPTZSpeed = $("#ptzspeed").val();
+        /*if (bZeroChannel) {// 零通道不支持云台
+            alert(零通道不支持云台);
+            return;
+        }*/
+
+        if (oWndInfo != null) {
+            if (9 == iPTZIndex && g_bPTZAuto) {
+                iPTZSpeed = 0;// 自动开启后，速度置为0可以关闭自动
+            } else {
+                g_bPTZAuto = false;// 点击其他方向，自动肯定会被关闭
+            }
+
+            WebVideoCtrl.I_PTZControl(iPTZIndex, false, {
+                iPTZSpeed: iPTZSpeed,
+                success: function (xmlDoc) {
+                    if (9 == iPTZIndex && g_bPTZAuto) {
+                        showOPInfo(oWndInfo.szDeviceIdentify + " 停止云台成功！");
+                    } else {
+                        showOPInfo(oWndInfo.szDeviceIdentify + " 开启云台成功！");
+                    }
+                    if (9 == iPTZIndex) {
+                        g_bPTZAuto = !g_bPTZAuto;
+                    }
+                },
+                error: function (status, xmlDoc) {
+                    showOPInfo(oWndInfo.szDeviceIdentify + " 开启云台失败！", status, xmlDoc);
+                }
+            });
+        }
+    }
+
+    // 方向PTZ停止
+    function mouseUpPTZControl(iPTZIndex) {
+        var oWndInfo = WebVideoCtrl.I_GetWindowStatus(szInfo);
+
+        if (oWndInfo != null) {
+            WebVideoCtrl.I_PTZControl(iPTZIndex, true, {
+                success: function (xmlDoc) {
+                    showOPInfo(oWndInfo.szDeviceIdentify + " 停止云台成功！");
+                },
+                error: function (status, xmlDoc) {
+                    showOPInfo(oWndInfo.szDeviceIdentify + " 停止云台失败！", status, xmlDoc);
+                }
+            });
+        }
+    }
+
+    // 设置预置点
+    function clickSetPreset() {
+        var oWndInfo = WebVideoCtrl.I_GetWindowStatus(szInfo),
+            iPresetID = parseInt($("#preset").val(), 10);
+
+        if (oWndInfo != null) {
+            WebVideoCtrl.I_SetPreset(iPresetID, {
+                success: function (xmlDoc) {
+                    showOPInfo(oWndInfo.szDeviceIdentify + " 设置预置点成功！");
+                },
+                error: function (status, xmlDoc) {
+                    showOPInfo(oWndInfo.szDeviceIdentify + " 设置预置点失败！", status, xmlDoc);
+                }
+            });
+        }
+    }
+
+    // 调用预置点
+    function clickGoPreset() {
+        var oWndInfo = WebVideoCtrl.I_GetWindowStatus(szInfo),
+            iPresetID = parseInt($("#preset").val(), 10);
+
+        if (oWndInfo != null) {
+            WebVideoCtrl.I_GoPreset(iPresetID, {
+                success: function (xmlDoc) {
+                    showOPInfo(oWndInfo.szDeviceIdentify + ' 调用预置点成功！');
+                },
+                error: function (status, xmlDoc) {
+                    showOPInfo(oWndInfo.szDeviceIdentify + ' 调用预置点失败！', status, xmlDoc);
+                }
+            });
+        }
+    }
+
+    // 变倍
+    function PTZZoomIn() {
+        var oWndInfo = WebVideoCtrl.I_GetWindowStatus(g_iWndIndex);
+
+        if (oWndInfo != null) {
+            WebVideoCtrl.I_PTZControl(10, false, {
+                iWndIndex: g_iWndIndex,
+                success: function (xmlDoc) {
+                    showOPInfo(oWndInfo.szDeviceIdentify + " 调焦+成功！");
+                },
+                error: function (status, xmlDoc) {
+                    showOPInfo(oWndInfo.szDeviceIdentify + "  调焦+失败！", status, xmlDoc);
+                }
+            });
+        }
+    }
+
+    function PTZZoomout() {
+        var oWndInfo = WebVideoCtrl.I_GetWindowStatus(g_iWndIndex);
+
+        if (oWndInfo != null) {
+            WebVideoCtrl.I_PTZControl(11, false, {
+                iWndIndex: g_iWndIndex,
+                success: function (xmlDoc) {
+                    showOPInfo(oWndInfo.szDeviceIdentify + " 调焦-成功！");
+                },
+                error: function (status, xmlDoc) {
+                    showOPInfo(oWndInfo.szDeviceIdentify + "  调焦-失败！", status, xmlDoc);
+                }
+            });
+        }
+    }
+
+    function PTZZoomStop() {
+        var oWndInfo = WebVideoCtrl.I_GetWindowStatus(g_iWndIndex);
+
+        if (oWndInfo != null) {
+            WebVideoCtrl.I_PTZControl(11, true, {
+                iWndIndex: g_iWndIndex,
+                success: function (xmlDoc) {
+                    showOPInfo(oWndInfo.szDeviceIdentify + " 调焦停止成功！");
+                },
+                error: function (status, xmlDoc) {
+                    showOPInfo(oWndInfo.szDeviceIdentify + "  调焦停止失败！", status, xmlDoc);
+                }
+            });
+        }
+    }
+
+    // 调焦
+    function PTZFocusIn() {
+        var oWndInfo = WebVideoCtrl.I_GetWindowStatus(g_iWndIndex);
+
+        if (oWndInfo != null) {
+            WebVideoCtrl.I_PTZControl(12, false, {
+                iWndIndex: g_iWndIndex,
+                success: function (xmlDoc) {
+                    showOPInfo(oWndInfo.szDeviceIdentify + " 聚焦+成功！");
+                },
+                error: function (status, xmlDoc) {
+                    showOPInfo(oWndInfo.szDeviceIdentify + "  聚焦+失败！", status, xmlDoc);
+                }
+            });
+        }
+    }
+
+    function PTZFoucusOut() {
+        var oWndInfo = WebVideoCtrl.I_GetWindowStatus(g_iWndIndex);
+
+        if (oWndInfo != null) {
+            WebVideoCtrl.I_PTZControl(13, false, {
+                iWndIndex: g_iWndIndex,
+                success: function (xmlDoc) {
+                    showOPInfo(oWndInfo.szDeviceIdentify + " 聚焦-成功！");
+                },
+                error: function (status, xmlDoc) {
+                    showOPInfo(oWndInfo.szDeviceIdentify + "  聚焦-失败！", status, xmlDoc);
+                }
+            });
+        }
+    }
+
+    function PTZFoucusStop() {
+        var oWndInfo = WebVideoCtrl.I_GetWindowStatus(g_iWndIndex);
+
+        if (oWndInfo != null) {
+            WebVideoCtrl.I_PTZControl(12, true, {
+                iWndIndex: g_iWndIndex,
+                success: function (xmlDoc) {
+                    showOPInfo(oWndInfo.szDeviceIdentify + " 聚焦停止成功！");
+                },
+                error: function (status, xmlDoc) {
+                    showOPInfo(oWndInfo.szDeviceIdentify + "  聚焦停止失败！", status, xmlDoc);
+                }
+            });
+        }
+    }
+
+    //光圈
+    function PTZIrisIn() {
+        var oWndInfo = WebVideoCtrl.I_GetWindowStatus(g_iWndIndex);
+
+        if (oWndInfo != null) {
+            WebVideoCtrl.I_PTZControl(14, false, {
+                iWndIndex: g_iWndIndex,
+                success: function (xmlDoc) {
+                    showOPInfo(oWndInfo.szDeviceIdentify + " 光圈+成功！");
+                },
+                error: function (status, xmlDoc) {
+                    showOPInfo(oWndInfo.szDeviceIdentify + "  光圈+失败！", status, xmlDoc);
+                }
+            });
+        }
+    }
+
+    function PTZIrisOut() {
+        var oWndInfo = WebVideoCtrl.I_GetWindowStatus(g_iWndIndex);
+
+        if (oWndInfo != null) {
+            WebVideoCtrl.I_PTZControl(15, false, {
+                iWndIndex: g_iWndIndex,
+                success: function (xmlDoc) {
+                    showOPInfo(oWndInfo.szDeviceIdentify + " 光圈-成功！");
+                },
+                error: function (status, xmlDoc) {
+                    showOPInfo(oWndInfo.szDeviceIdentify + "  光圈-失败！", status, xmlDoc);
+                }
+            });
+        }
+    }
+
+    function PTZIrisStop() {
+        var oWndInfo = WebVideoCtrl.I_GetWindowStatus(g_iWndIndex);
+
+        if (oWndInfo != null) {
+            WebVideoCtrl.I_PTZControl(14, true, {
+                iWndIndex: g_iWndIndex,
+                success: function (xmlDoc) {
+                    showOPInfo(oWndInfo.szDeviceIdentify + " 光圈停止成功！");
+                },
+                error: function (status, xmlDoc) {
+                    showOPInfo(oWndInfo.szDeviceIdentify + "  光圈停止失败！", status, xmlDoc);
+                }
+            });
+        }
+    }
+
+    // 抓图
+    function clickCapturePic() {
+        var oWndInfo = WebVideoCtrl.I_GetWindowStatus(szInfo);
+        if (oWndInfo != null) {
+            var xmlDoc = WebVideoCtrl.I_GetLocalCfg();
+            var szCaptureFileFormat = "0";
+            if (xmlDoc != null) {
+                szCaptureFileFormat = $(xmlDoc).find("CaptureFileFormat").eq(0).text();
+            }
+            var szChannelID = map.get(szInfo).channelId;
+            var szPicName = oWndInfo.szDeviceIdentify + "_" + szChannelID + "_" + new Date().getTime();
+
+            szPicName += ("0" === szCaptureFileFormat) ? ".jpg" : ".bmp";
+
+            var iRet = WebVideoCtrl.I_CapturePic(szPicName, {
+                bDateDir: true  //是否生成日期文件
+            });
+            if (0 == iRet) {
+                showOPInfo("抓图成功！");
+            } else {
+                showOPInfo("抓图失败！");
+            }
+        }
+    }
+
+    // 开始录像
+    var g_szRecordType = "";
+
+    function clickStartRecord(szType) {
+        var oWndInfo = WebVideoCtrl.I_GetWindowStatus(szInfo);
+        g_szRecordType = szType;
+        if (oWndInfo != null) {
+            var szChannelID = map.get(szInfo).channelId,
+                szFileName = oWndInfo.szDeviceIdentify + "_" + szChannelID + "_" + new Date().getTime();
+
+            WebVideoCtrl.I_StartRecord(szFileName, {
+                bDateDir: true, //是否生成日期文件
+                success: function () {
+                    if ('realplay' === szType) {
+                        showOPInfo(oWndInfo.szDeviceIdentify + " " + "开始录像成功！");
+                    } else if ('playback' === szType) {
+                        showOPInfo(oWndInfo.szDeviceIdentify + " " + "开始剪辑成功！");
+                    }
+                },
+                error: function () {
+                    if ('realplay' === szType) {
+                        showOPInfo(oWndInfo.szDeviceIdentify + " " + "开始录像失败！");
+                    } else if ('playback' === szType) {
+                        showOPInfo(oWndInfo.szDeviceIdentify + " " + "开始剪辑失败！");
+                    }
+                }
+            });
+        }
+    }
+
+    // 停止录像
+    function clickStopRecord(szType, iWndIndex) {
+        if ("undefined" === typeof iWndIndex) {
+            iWndIndex = szInfo;
+        }
+        var oWndInfo = WebVideoCtrl.I_GetWindowStatus(iWndIndex);
+        if (oWndInfo != null) {
+            WebVideoCtrl.I_StopRecord({
+                success: function () {
+                    if ('realplay' === szType) {
+                        showOPInfo(oWndInfo.szDeviceIdentify + " " + "停止录像成功！");
+                    } else if ('playback' === szType) {
+                        showOPInfo(oWndInfo.szDeviceIdentify + " " + "停止剪辑成功！");
+                    }
+                },
+                error: function () {
+                    if ('realplay' === szType) {
+                        showOPInfo(oWndInfo.szDeviceIdentify + " " + "停止录像失败！");
+                    } else if ('playback' === szType) {
+                        showOPInfo(oWndInfo.szDeviceIdentify + " " + "停止剪辑失败！");
+                    }
+                }
+            });
+        }
+    }
+
+    // 获取对讲通道
+    var audioChannelId = 0;
+
+    function clickGetAudioInfo() {
+        var szDeviceIdentify = map.get(szInfo).szDeviceIdentify;
+        if (null == szDeviceIdentify) {
+            return;
+        }
+        WebVideoCtrl.I_GetAudioInfo(szDeviceIdentify, {
+            success: function (xmlDoc) {
+                var oAudioChannels = $(xmlDoc).find("TwoWayAudioChannel");
+                $.each(oAudioChannels, function () {
+                    var id = $(this).find("id").eq(0).text();
+                    showOPInfo("通道ID：" + id);
+                    clickStartVoiceTalk(id);
+                });
+                showOPInfo(szDeviceIdentify + " 获取对讲通道成功！" + audioChannelId);
+            },
+            error: function (status, xmlDoc) {
+                showOPInfo(szDeviceIdentify + " 获取对讲通道失败！", status, xmlDoc);
+            }
+        });
+    }
+
+    // 开始对讲
+    function clickStartVoiceTalk(channelId) {
+        var szDeviceIdentify = map.get(szInfo).szDeviceIdentify,
+            iAudioChannel = channelId;
+        if (null == szDeviceIdentify) {
+            return;
+        }
+        if (isNaN(iAudioChannel)) {
+            alert("请选择对讲通道！");
+            return;
+        }
+
+        var iRet = WebVideoCtrl.I_StartVoiceTalk(szDeviceIdentify, iAudioChannel);
+        if (0 == iRet) {
+            showOPInfo(szDeviceIdentify + " " + "开始对讲成功！");
+        } else {
+            showOPInfo(szDeviceIdentify + " " + "开始对讲失败！");
+        }
+    }
+
+    // 停止对讲
+    function clickStopVoiceTalk() {
+        var szDeviceIdentify = map.get(szInfo).szDeviceIdentify,
+            iRet = WebVideoCtrl.I_StopVoiceTalk();
+
+        if (null == szDeviceIdentify) {
+            return;
+        }
+
+        if (0 == iRet) {
+            showOPInfo(szDeviceIdentify + " " + "停止对讲成功！");
+        } else {
+            showOPInfo(szDeviceIdentify + " " + "停止对讲失败！");
+        }
+    }
+
+    // 远程配置库
+    function clickRemoteConfig() {
+        var szDeviceIdentify = map.get(szInfo).szDeviceIdentify,
+            iDevicePort = 80;
+
+        if (null == szDeviceIdentify) {
+            return;
+        }
+
+        var iRet = WebVideoCtrl.I_RemoteConfig(szDeviceIdentify, {
+
+            iLan: 1
+        });
+
+        if (-1 == iRet) {
+            showOPInfo(szDeviceIdentify + " " + "调用远程配置库失败！");
+        } else {
+            showOPInfo(szDeviceIdentify + " " + "调用远程配置库成功！");
+        }
+    }
+
+    // 显示操作信息
+    function showOPInfo(szInfo, status, xmlDoc) {
+        var szTip = "<div>" + dateFormat(new Date(), "yyyy-MM-dd hh:mm:ss") + " " + szInfo;
+        if (typeof status != "undefined" && status != 200) {
+            var szStatusString = $(xmlDoc).find("statusString").eq(0).text();
+            var szSubStatusCode = $(xmlDoc).find("subStatusCode").eq(0).text();
+            if ("" === szSubStatusCode) {
+                szTip += "(" + status + ", " + szStatusString + ")";
+            } else {
+                szTip += "(" + status + ", " + szSubStatusCode + ")";
+            }
+        }
+        szTip += "</div>";
+
+        $("#opinfo").html(szTip + $("#opinfo").html());
+    }
+
+    // 显示回调信息
+    function showCBInfo(szInfo) {
+        szInfo = "<div>" + dateFormat(new Date(), "yyyy-MM-dd hh:mm:ss") + " " + szInfo + "</div>";
+        $("#cbinfo").html(szInfo + $("#cbinfo").html());
+    }
+
+    // 格式化时间
+    function dateFormat(oDate, fmt) {
+        var o = {
+            "M+": oDate.getMonth() + 1, //月份
+            "d+": oDate.getDate(), //日
+            "h+": oDate.getHours(), //小时
+            "m+": oDate.getMinutes(), //分
+            "s+": oDate.getSeconds(), //秒
+            "q+": Math.floor((oDate.getMonth() + 3) / 3), //季度
+            "S": oDate.getMilliseconds()//毫秒
+        };
+        if (/(y+)/.test(fmt)) {
+            fmt = fmt.replace(RegExp.$1, (oDate.getFullYear() + "").substr(4 - RegExp.$1.length));
+        }
+        for (var k in o) {
+            if (new RegExp("(" + k + ")").test(fmt)) {
+                fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
+            }
+        }
+        return fmt;
+    }
+</script>
+</html>

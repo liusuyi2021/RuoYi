@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.project.traffic.deviceInfo.mapper.TrafficDeviceInfoMapper">
+
+    <resultMap type="TrafficDeviceInfo" id="TrafficDeviceInfoResult">
+        <result property="deviceId" column="device_id"/>
+        <result property="deviceIndex" column="device_index"/>
+        <result property="deptId" column="dept_id"/>
+        <result property="deviceName" column="device_name"/>
+        <result property="typeCode" column="type_code"/>
+        <result property="ipAddr" column="ip_addr"/>
+        <result property="port" column="port"/>
+        <result property="userName" column="user_name"/>
+        <result property="passWord" column="pass_word"/>
+        <result property="loginState" column="login_state"/>
+        <result property="flag" column="flag"/>
+        <result property="loginId" column="login_id"/>
+        <result property="serialNumber" column="serial_number"/>
+        <result property="chanNum" column="chan_num"/>
+        <result property="chanSpecsNum" column="chan_specs_num"/>
+        <result property="createTime" column="create_time"/>
+        <association property="dept" column="dept_id" javaType="Dept" resultMap="deptResult"/>
+    </resultMap>
+    <resultMap id="deptResult" type="Dept">
+        <id property="deptId" column="dept_id"/>
+        <result property="parentId" column="parent_id"/>
+        <result property="ancestors" column="ancestors"/>
+        <result property="deptName" column="dept_name"/>
+        <result property="orderNum" column="order_num"/>
+        <result property="leader" column="leader"/>
+        <result property="status" column="dept_status"/>
+        <result property="deviceName" column="device_name"/>
+        <result property="ipAddr" column="ip_addr"/>
+        <result property="port" column="port"/>
+        <result property="userName" column="user_name"/>
+        <result property="passWord" column="pass_word"/>
+        <result property="chanNum" column="chan_num"/>
+        <result property="deviceType" column="type_code"/>
+    </resultMap>
+
+    <sql id="selectTrafficDeviceInfoVo">
+        select u.device_id,
+               u.dept_id,
+               d.dept_name,
+               u.device_index,
+               u.device_name,
+               u.type_code,
+               u.ip_addr,
+               u.port,
+               u.user_name,
+               u.pass_word,
+               u.login_state,
+               u.flag,
+               u.login_id,
+               u.serial_number,
+               u.chan_num,
+               u.chan_specs_num,
+               u.create_time
+        from traffic_device_info u
+                 left join sys_dept d on u.dept_id = d.dept_id
+    </sql>
+    <select id="selectTrafficDeviceInfoAll" resultMap="TrafficDeviceInfoResult">
+        <include refid="selectTrafficDeviceInfoVo"/>
+    </select>
+    <select id="selectTrafficDeviceInfoToDept" resultMap="deptResult">
+        SELECT T.device_id AS dept_id,
+               T.dept_id AS parent_id,
+               C.chan_name AS dept_name,
+               0 AS dept_status,
+               C.chan_index AS chan_num,
+               T.device_name,
+               T.ip_addr,
+               T.port,
+               T.user_name,
+               T.pass_word,
+               T.type_code
+        FROM
+            traffic_device_info
+                T LEFT JOIN traffic_channel_info C ON c.device_id=T.device_id
+    </select>
+    <select id="selectTrafficDeviceInfoList" parameterType="TrafficDeviceInfo" resultMap="TrafficDeviceInfoResult">
+        <include refid="selectTrafficDeviceInfoVo"></include>
+        <where>
+            <if test="deviceIndex != null  and deviceIndex != ''">
+                and device_index = #{deviceIndex}
+            </if>
+            <if test="deviceName != null  and deviceName != ''">
+                and device_name like concat('%', #{deviceName}, '%')
+            </if>
+            <if test="typeCode != null  and typeCode != ''">
+                and type_code = #{typeCode}
+            </if>
+            <if test="ipAddr != null  and ipAddr != ''">
+                and ip_addr = #{ipAddr}
+            </if>
+            <if test="deptId != null and deptId != 0">
+                and (u.dept_id = #{deptId} OR u.dept_id IN ( SELECT t.dept_id FROM sys_dept t WHERE cast(#{deptId} as
+                varchar) = any(string_to_array(ancestors,'',''))))
+            </if>
+            <if test="selectDeviceIds != null">
+                device_id in
+                <foreach item="deviceId" collection="selectDeviceIds" open="(" separator="," close=")">
+                    #{deviceId}
+                </foreach>
+            </if>
+        </where>
+    </select>
+
+    <select id="selectTrafficDeviceInfoById" parameterType="Long" resultMap="TrafficDeviceInfoResult">
+        <include refid="selectTrafficDeviceInfoVo"/>
+        where device_id = #{deviceId}
+    </select>
+
+    <select id="checkDeviceBhUnique" parameterType="String" resultType="int">
+        select count(1) from traffic_device_info where device_index=#{deviceIndex} limit 1
+    </select>
+
+    <insert id="insertTrafficDeviceInfo" parameterType="TrafficDeviceInfo" useGeneratedKeys="true" keyProperty="deviceId">
+        insert into traffic_device_info
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="deviceIndex != null">device_index,</if>
+            <if test="deptId != null">dept_id,</if>
+            <if test="deviceName != null">device_name,</if>
+            <if test="typeCode != null">type_code,</if>
+            <if test="ipAddr != null">ip_addr,</if>
+            <if test="port != null">port,</if>
+            <if test="userName != null">user_name,</if>
+            <if test="passWord != null">pass_word,</if>
+            <if test="loginState != null">login_state,</if>
+            <if test="flag != null">flag,</if>
+            <if test="loginId != null">login_id,</if>
+            <if test="serialNumber != null">serial_number,</if>
+            <if test="chanNum != null">chan_num,</if>
+            <if test="chanSpecsNum != null">chan_specs_num,</if>
+            <if test="createTime != null">create_time,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="deviceIndex != null">#{deviceIndex},</if>
+            <if test="deptId != null">#{deptId},</if>
+            <if test="deviceName != null">#{deviceName},</if>
+            <if test="typeCode != null">#{typeCode},</if>
+            <if test="ipAddr != null">#{ipAddr},</if>
+            <if test="port != null">#{port},</if>
+            <if test="userName != null">#{userName},</if>
+            <if test="passWord != null">#{passWord},</if>
+            <if test="loginState != null">#{loginState},</if>
+            <if test="flag != null">#{1},</if>
+            <if test="loginId != null">#{loginId},</if>
+            <if test="serialNumber != null">#{serialNumber},</if>
+            <if test="chanNum != null">#{chanNum},</if>
+            <if test="chanSpecsNum != null">#{chanSpecsNum},</if>
+            <if test="createTime != null">#{createTime},</if>
+        </trim>
+    </insert>
+
+    <update id="updateTrafficDeviceInfo" parameterType="TrafficDeviceInfo">
+        update traffic_device_info
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="deviceIndex != null">device_index = #{deviceIndex},</if>
+            <if test="deptId != null">dept_id = #{deptId},</if>
+            <if test="deviceName != null">device_name = #{deviceName},</if>
+            <if test="typeCode != null">type_code = #{typeCode},</if>
+            <if test="ipAddr != null">ip_addr = #{ipAddr},</if>
+            <if test="port != null">port = #{port},</if>
+            <if test="userName != null">user_name = #{userName},</if>
+            <if test="passWord != null">pass_word = #{passWord},</if>
+            <if test="loginState != null">login_state = #{loginState},</if>
+            <if test="flag != null">flag = #{2},</if>
+            <if test="loginId != null">login_id = #{loginId},</if>
+            <if test="serialNumber != null">serial_number = #{serialNumber},</if>
+            <if test="chanNum != null">chan_num = #{chanNum},</if>
+            <if test="chanSpecsNum != null">chan_specs_num = #{chanSpecsNum},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+        </trim>
+        where device_id = #{deviceId}
+    </update>
+
+    <delete id="deleteTrafficDeviceInfoById" parameterType="Long">
+        delete
+        from traffic_device_info
+        where device_id = #{deviceId}
+    </delete>
+
+    <delete id="deleteTrafficDeviceInfoByIds" parameterType="java.util.List">
+        delete from traffic_device_info where device_id in
+        <foreach item="deviceId" collection="array" open="(" separator="," close=")">
+            #{deviceId}
+        </foreach>
+    </delete>
+
+</mapper>

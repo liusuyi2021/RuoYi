@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:include="include :: header('修改设备信息')"/>
+</head>
+<body class="white-bg">
+<div class="wrapper wrapper-content animated fadeInRight ibox-content">
+    <form class="form-horizontal m" id="form-device-edit" th:object="${trafficDeviceInfo}">
+        <input name="deviceId" th:field="*{deviceId}" type="hidden">
+        <input name="deptId" type="hidden" th:field="*{deptId}" id="treeId"/>
+        <div class="form-group">
+            <label class="col-sm-3 control-label">归属部门：</label>
+            <div class="col-sm-8">
+                <div class="input-group">
+                    <input name="deptName" onclick="selectDeptTree()" id="treeName" type="text"
+                           th:field="*{dept.deptName}"
+                           class="form-control">
+                    <span class="input-group-addon"><i class="fa fa-search"></i></span>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label">设备编号：</label>
+            <div class="col-sm-8">
+                <input name="deviceIndex" th:field="*{deviceIndex}" class="form-control" type="text">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label">设备名称：</label>
+            <div class="col-sm-8">
+                <input name="deviceName" th:field="*{deviceName}" class="form-control" type="text">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label">设备类型：</label>
+            <div class="col-sm-8">
+                <select th:id="devtype" name="typeCode" class="form-control m-b" th:onchange="typeToPort()"
+                        th:with="type=${@dict.getType('device_type')}" disabled readonly>
+                    <option th:each="dict : ${type}" th:text="${dict.dictLabel}" th:value="${dict.dictValue}"
+                            th:field="*{typeCode}"></option>
+                </select>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label">设备ip：</label>
+            <div class="col-sm-8">
+                <input name="ipAddr" th:field="*{ipAddr}" class="form-control" type="text">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label">设备端口：</label>
+            <div class="col-sm-8">
+                <input th:id="port" name="port" th:field="*{port}" class="form-control" type="text">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label">用户名：</label>
+            <div class="col-sm-8">
+                <input name="userName" th:field="*{userName}" class="form-control" type="text">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label">密码：</label>
+            <div class="col-sm-8">
+                <input name="passWord" th:field="*{passWord}" class="form-control" type="password">
+            </div>
+        </div>
+        <div class="form-group" th:hidden="hidden">
+            <label class="col-sm-3 control-label">登录id：</label>
+            <div class="col-sm-8">
+                <input name="loginId" th:field="*{loginId}" class="form-control" type="text">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label">设备序号：</label>
+            <div class="col-sm-8">
+                <input name="serialNumber" th:field="*{serialNumber}" class="form-control" type="text">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label">通道数：</label>
+            <div class="col-sm-8">
+                <input name="chanNum" th:field="*{chanNum}" class="form-control" type="text">
+            </div>
+        </div>
+    </form>
+</div>
+<th:block th:include="include :: footer"/>
+<script th:inline="javascript">
+    var prefix = ctx + "traffic/device";
+    $("#form-device-edit").validate({
+        focusCleanup: true
+    });
+    function submitHandler() {
+        if ($.validate.form()) {
+            $("#devtype").removeAttr("disabled");
+            $.operate.save(prefix + "/edit", $('#form-device-edit').serialize());
+        }
+    }
+    function typeToPort() {
+        var select = document.getElementById("devtype").value;
+        var name = document.getElementById("port");
+        if (select == "16") {
+            name.value = "37777";
+        } else {
+            name.value = "8000";
+        }
+    }
+
+    /* 用户管理-修改-选择部门树 */
+    function selectDeptTree() {
+        var deptId = $.common.isEmpty($("#treeId").val()) ? "100" : $("#treeId").val();
+        var url = ctx + "system/dept/selectDeptTree/" + deptId;
+        var options = {
+            title: '选择部门',
+            width: "380",
+            url: url,
+            callBack: doSubmit
+        };
+        $.modal.openOptions(options);
+    }
+
+    function doSubmit(index, layero) {
+        var body = $.modal.getChildFrame(index);
+        $("#treeId").val(body.find('#treeId').val());
+        $("#treeName").val(body.find('#treeName').val());
+        $.modal.close(index);
+    }
+</script>
+</body>
+</html>

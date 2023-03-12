@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+    <th:block th:include="include :: header('服务器管理列表')"/>
+</head>
+<body class="gray-bg">
+<div class="container-div">
+    <div class="row">
+        <div class="col-sm-12 search-collapse">
+            <form id="formId">
+                <div class="select-list">
+                    <ul>
+                        <li>
+                            <label>名称：</label>
+                            <input type="text" name="serverName"/>
+                        </li>
+                        <li>
+                            <label>类型：</label>
+                            <select name="serverType" th:with="type=${@dict.getType('server_type')}">
+                                <option value="">所有</option>
+                                <option th:each="dict : ${type}" th:text="${dict.dictLabel}"
+                                        th:value="${dict.dictValue}"></option>
+                            </select>
+                        </li>
+                        <li>
+                            <label>服务器IP：</label>
+                            <input type="text" name="ipAddr"/>
+                        </li>
+                        <li th:hidden="hidden">
+                            <label>服务器端口：</label>
+                            <input type="text" name="port"/>
+                        </li>
+                        <li th:hidden="hidden">
+                            <label>用户名：</label>
+                            <input type="text" name="username"/>
+                        </li>
+                        <li th:hidden="hidden">
+                            <label>密码：</label>
+                            <input type="text" name="password"/>
+                        </li>
+                        <li th:hidden="hidden">
+                            <label>数据接入服务器ID：</label>
+                            <input type="text" name="tdhsServerId"/>
+                        </li>
+                        <li th:hidden="hidden">
+                            <label>图片存储服务器ID：</label>
+                            <input type="text" name="minioServerId"/>
+                        </li>
+                        <li>
+                            <a class="btn btn-primary btn-rounded btn-sm" onclick="$.table.search()"><i
+                                    class="fa fa-search"></i>&nbsp;搜索</a>
+                            <a class="btn btn-warning btn-rounded btn-sm" onclick="$.form.reset()"><i
+                                    class="fa fa-refresh"></i>&nbsp;重置</a>
+                        </li>
+                    </ul>
+                </div>
+            </form>
+        </div>
+
+        <div class="btn-group-sm" id="toolbar" role="group">
+            <a class="btn btn-success" onclick="$.operate.add()" shiro:hasPermission="traffic:serverinfo:add">
+                <i class="fa fa-plus"></i> 添加
+            </a>
+            <a class="btn btn-primary single disabled" onclick="$.operate.edit()"
+               shiro:hasPermission="traffic:serverinfo:edit">
+                <i class="fa fa-edit"></i> 修改
+            </a>
+            <a class="btn btn-danger multiple disabled" onclick="$.operate.removeAll()"
+               shiro:hasPermission="traffic:serverinfo:remove">
+                <i class="fa fa-remove"></i> 删除
+            </a>
+            <a class="btn btn-warning" onclick="exportSelected()" shiro:hasPermission="traffic:serverinfo:export">
+                <i class="fa fa-download"></i> 导出
+            </a>
+        </div>
+        <div class="col-sm-12 select-table table-striped">
+            <table id="bootstrap-table"></table>
+        </div>
+    </div>
+</div>
+<th:block th:include="include :: footer"/>
+<script th:inline="javascript">
+    var editFlag = [[${@permission.hasPermi('traffic:serverinfo:edit')}]];
+    var removeFlag = [[${@permission.hasPermi('traffic:serverinfo:remove')}]];
+    var serverTypeDatas = [[${@dict.getType('server_type')}]];
+    var prefix = ctx + "traffic/serverinfo";
+
+    $(function () {
+        var options = {
+            url: prefix + "/list",
+            createUrl: prefix + "/add",
+            updateUrl: prefix + "/edit/{id}",
+            removeUrl: prefix + "/remove",
+            exportUrl: prefix + "/export",
+
+            uniqueId: 'serverId',  // 配置唯一标识
+            clickToSelect: true,  // 点击行选择
+            sidePagination: "client", //未分离版用的client
+            maintainSelected: true,  // 翻页保留所选行，需要和sidePagination一起使用才能生效
+            rememberSelected: true,  // 翻页记录所选行
+
+            modalName: "服务器管理",
+            columns: [{
+                checkbox: true
+            },
+                {
+                    field: 'serverId',
+                    title: '服务器ID',
+                    visible: false
+                },
+                {
+                    field: 'serverName',
+                    title: '服务器名称'
+                },
+                {
+                    field: 'serverType',
+                    title: '服务器类型',
+                    formatter: function (value, row, index) {
+                        return $.table.selectDictLabel(serverTypeDatas, value);
+                    }
+                },
+                {
+                    field: 'ipAddr',
+                    title: '服务器IP'
+                },
+                {
+                    field: 'port',
+                    title: '服务器端口'
+                },
+                {
+                    field: 'username',
+                    title: '用户名',
+                    visible: false
+                },
+                {
+                    field: 'password',
+                    title: '密码',
+                    visible: false
+                },
+                {
+                    field: 'tdhsServerId',
+                    title: '数据接入服务器',
+                    visible: false
+                },
+                {
+                    field: 'minioServerId',
+                    title: '图片存储服务器',
+                    visible: false
+                },
+                {
+                    title: '操作',
+                    align: 'center',
+                    visible: false,
+                    formatter: function (value, row, index) {
+                        var actions = [];
+                        actions.push('<a class="btn btn-success btn-xs ' + editFlag + '" href="javascript:void(0)" onclick="$.operate.edit(\'' + row.serverId + '\')"><i class="fa fa-edit"></i>编辑</a> ');
+                        actions.push('<a class="btn btn-danger btn-xs ' + removeFlag + '" href="javascript:void(0)" onclick="$.operate.remove(\'' + row.serverId + '\')"><i class="fa fa-remove"></i>删除</a>');
+                        return actions.join('');
+                    }
+                }]
+        };
+        $.table.init(options);
+    });
+
+    // 选择导出数据
+    function exportSelected() {
+        var ids = $.table.selectColumns("serverId");
+        var dataParam = $("#formId").serializeArray();
+        var tipMsg = "确定导出所有数据吗？";
+        if ($.common.isNotEmpty(ids)) {
+            tipMsg = "确定导出勾选" + ids.length + "条数据吗？";
+            dataParam.push({"name": "selectIds", "value": ids});
+        }
+        $.modal.confirm(tipMsg, function () {
+            $.post(prefix + "/selectExport", dataParam, function (result) {
+                if (result.code == web_status.SUCCESS) {
+                    window.location.href = ctx + "common/download?fileName=" + encodeURI(result.msg) + "&delete=" + true;
+                } else {
+                    $.modal.alertError(result.msg);
+                }
+            });
+        });
+    }
+</script>
+</body>
+</html>

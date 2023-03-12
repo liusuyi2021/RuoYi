@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.project.traffic.crossinginfo.mapper.TrafficCrossingInfoMapper">
+    <resultMap type="com.ruoyi.project.traffic.serverinfo.domain.TrafficServerInfo" id="TrafficServerInfoResult">
+        <result property="serverId" column="server_id"/>
+        <result property="serverName" column="server_name"/>
+    </resultMap>
+    <resultMap type="com.ruoyi.project.traffic.passInfo.domain.TrafficVehiclePass" id="TrafficVehiclePassResult">
+        <result property="crossingId" column="crossing_id"/>
+        <result property="count" column="count"/>
+    </resultMap>
+    <resultMap type="com.ruoyi.project.traffic.alarmInfo.domain.TrafficVehicleAlarm" id="TrafficVehicleAlarmResult">
+        <result property="crossingId" column="crossing_id"/>
+        <result property="count" column="count"/>
+    </resultMap>
+    <resultMap type="TrafficCrossingInfo" id="TrafficCrossingInfoResult">
+        <result property="crossingId" column="crossing_id"/>
+        <result property="deptId" column="dept_id"/>
+        <result property="crossingBh" column="crossing_bh"/>
+        <result property="crossingName" column="crossing_name"/>
+        <result property="laneNum" column="lane_num"/>
+        <result property="smallLimitSpeed" column="small_limit_speed"/>
+        <result property="bigLimitSpeed" column="big_limit_speed"/>
+        <result property="tdasServerId" column="tdas_server_id"/>
+        <association property="dept" column="dept_id" javaType="Dept" resultMap="deptResult"/>
+        <association property="trafficServerInfo" resultMap="TrafficServerInfoResult"/>
+        <association property="trafficVehiclePass" resultMap="TrafficVehiclePassResult"/>
+        <association property="trafficVehicleAlarm" resultMap="TrafficVehicleAlarmResult"/>
+    </resultMap>
+    <resultMap id="deptResult" type="Dept">
+        <id property="deptId" column="dept_id"/>
+        <result property="parentId" column="parent_id"/>
+        <result property="ancestors" column="ancestors"/>
+        <result property="deptName" column="dept_name"/>
+        <result property="orderNum" column="order_num"/>
+        <result property="leader" column="leader"/>
+        <result property="status" column="dept_status"/>
+    </resultMap>
+    <sql id="selectTrafficCrossingInfoVo">
+        select u.crossing_id,
+               u.dept_id,
+               d.dept_name,
+               u.crossing_bh,
+               u.crossing_name,
+               u.lane_num,
+               u.small_limit_speed,
+               u.big_limit_speed,
+               u.tdas_server_id,
+               s.server_name
+        from traffic_crossing_info u
+                 left join sys_dept d on u.dept_id = d.dept_id
+                 left join traffic_server_info s on s.server_id = u.tdas_server_id
+    </sql>
+
+    <sql id="selectTrafficCrossingInfoPassData">
+        SELECT A.crossing_name,
+               COALESCE(b.COUNT, 0) as "count"
+        FROM traffic_crossing_info AS A
+                 LEFT JOIN (SELECT crossing_id, COUNT(1) AS COUNT
+                            FROM traffic_vehicle_pass
+                            WHERE pass_time > CURRENT_TIMESTAMP - INTERVAL '15 min'
+                            GROUP BY crossing_id) AS b ON b.crossing_id = A.crossing_id
+    </sql>
+    <sql id="selectTrafficCrossingInfoAlarmData">
+        SELECT A.crossing_name,
+               COALESCE(b.COUNT, 0) as "count"
+        FROM traffic_crossing_info AS A
+                 LEFT JOIN (SELECT crossing_id, COUNT(1) AS COUNT
+                            FROM traffic_vehicle_alarm
+                            WHERE alarm_time > CURRENT_TIMESTAMP - INTERVAL '15 min'
+                            GROUP BY crossing_id) AS b ON b.crossing_id = A.crossing_id
+    </sql>
+
+    <select id="selectTrafficCrossingInfoPassDataCount" resultMap="TrafficCrossingInfoResult">
+        <include refid="selectTrafficCrossingInfoPassData"/>
+    </select>
+
+    <select id="selectTrafficCrossingInfoAlarmDataCount" resultMap="TrafficCrossingInfoResult">
+        <include refid="selectTrafficCrossingInfoAlarmData"/>
+    </select>
+
+    <select id="selectTrafficCrossingInfoList" parameterType="TrafficCrossingInfo"
+            resultMap="TrafficCrossingInfoResult">
+        <include refid="selectTrafficCrossingInfoVo"/>
+        <where>
+            <if test="crossingBh != null  and crossingBh != ''">and crossing_bh = #{crossingBh}</if>
+            <if test="crossingName != null  and crossingName != ''">and crossing_name like concat('%', #{crossingName},
+                '%')
+            </if>
+            <if test="deptId != null and deptId != 0">
+                and (u.dept_id = #{deptId} OR u.dept_id IN ( SELECT t.dept_id FROM sys_dept t WHERE cast(#{deptId} as
+                varchar) = any(string_to_array(ancestors,'',''))))
+            </if>
+            <if test="selectCrossingIds != null">
+                crossing_id in
+                <foreach item="crossingId" collection="selectCrossingIds" open="(" separator="," close=")">
+                    #{crossingId}
+                </foreach>
+            </if>
+        </where>
+    </select>
+
+    <select id="selectTrafficCrossingInfoAll" resultMap="TrafficCrossingInfoResult">
+        <include refid="selectTrafficCrossingInfoVo"/>
+    </select>
+
+    <select id="selectTrafficCrossingInfoByCrossingId" parameterType="Long" resultMap="TrafficCrossingInfoResult">
+        <include refid="selectTrafficCrossingInfoVo"/>
+        where crossing_id = #{crossingId}
+    </select>
+
+    <select id="checkCrossingBhUnique" parameterType="String" resultType="int">
+        select count(1) from traffic_crossing_info where crossing_bh=#{crossingBh} limit 1
+    </select>
+
+    <insert id="insertTrafficCrossingInfo" parameterType="TrafficCrossingInfo" useGeneratedKeys="true"
+            keyProperty="crossingId">
+        insert into traffic_crossing_info
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="deptId != null">dept_id,</if>
+            <if test="crossingBh != null">crossing_bh,</if>
+            <if test="crossingName != null">crossing_name,</if>
+            <if test="laneNum != null">lane_num,</if>
+            <if test="smallLimitSpeed != null">small_limit_speed,</if>
+            <if test="bigLimitSpeed != null">big_limit_speed,</if>
+            <if test="tdasServerId != null">tdas_server_id,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="deptId != null">#{deptId},</if>
+            <if test="crossingBh != null">#{crossingBh},</if>
+            <if test="crossingName != null">#{crossingName},</if>
+            <if test="laneNum != null">#{laneNum},</if>
+            <if test="smallLimitSpeed != null">#{smallLimitSpeed},</if>
+            <if test="bigLimitSpeed != null">#{bigLimitSpeed},</if>
+            <if test="tdasServerId != null">#{tdasServerId},</if>
+        </trim>
+    </insert>
+
+    <update id="updateTrafficCrossingInfo" parameterType="TrafficCrossingInfo">
+        update traffic_crossing_info
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="deptId != null">dept_id = #{deptId},</if>
+            <if test="crossingBh != null">crossing_bh = #{crossingBh},</if>
+            <if test="crossingName != null">crossing_name = #{crossingName},</if>
+            <if test="laneNum != null">lane_num = #{laneNum},</if>
+            <if test="smallLimitSpeed != null">small_limit_speed = #{smallLimitSpeed},</if>
+            <if test="bigLimitSpeed != null">big_limit_speed = #{bigLimitSpeed},</if>
+            <if test="tdasServerId != null">tdas_server_id = #{tdasServerId},</if>
+        </trim>
+        where crossing_id = #{crossingId}
+    </update>
+
+    <delete id="deleteTrafficCrossingInfoByCrossingId" parameterType="Long">
+        delete
+        from traffic_crossing_info
+        where crossing_id = #{crossingId}
+    </delete>
+
+    <delete id="deleteTrafficCrossingInfoByCrossingIds" parameterType="java.util.List">
+        delete from traffic_crossing_info where crossing_id in
+        <foreach item="crossingId" collection="array" open="(" separator="," close=")">
+            #{crossingId}
+        </foreach>
+    </delete>
+
+</mapper>

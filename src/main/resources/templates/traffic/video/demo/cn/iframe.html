@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="zh" >
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Cache-Control" content="no-cache, must-revalidate" />
+    <meta http-equiv="Expires" content="0" />
+</head>
+<style type="text/css">
+    .plugin {
+        width: 100%;
+        height: auto;
+
+    }
+html, body {
+    margin: 0;
+    padding: 0;
+    border: 0;
+}
+</style>
+<body>
+    <div id="divPlugin" class="plugin"></div>
+</body>
+<script src="../../view/jquery-1.7.1.min.js"></script>
+<script src="../../view/codebase/webVideoCtrl.js"></script>
+<script>
+
+    var szInfo = 0;
+    var map = new Map();
+    $(function () {
+        // 检查插件是否已经安装过
+        var iRet = WebVideoCtrl.I_CheckPluginInstall();
+        if (-1 == iRet) {
+            alert("您还未安装过插件，双击开发包目录里的WebComponentsKit.exe安装！");
+            return;
+        }
+
+        /*获取高度 */
+        /*var h = document.getElementById('ui-layout-center').clientHeight;*/
+        var h = $("#ui-layout-center").css('height');
+        //获取宽度
+        /*var w = document.getElementById('ui-layout-center').clientWidth;*/
+        var w = $("#ui-layout-center").css('width');
+        var oPlugin = {
+            iWidth: document.documentElement.clientWidth, // plugin width
+            iHeight: document.documentElement.clientHeight// plugin height
+        };
+
+
+        // 初始化插件参数及插入插件
+        WebVideoCtrl.I_InitPlugin(oPlugin.iWidth, oPlugin.iHeight, {
+            bWndFull: true,//是否支持单窗口双击全屏，默认支持 true:支持 false:不支持
+            iWndowType: 2,
+            cbSelWnd: function (xmlDoc) {
+                g_iWndIndex = parseInt($(xmlDoc).find("SelectWnd").eq(0).text(), 10);
+                /*szInfo = "当前选择的窗口编号：" + g_iWndIndex;*/
+                szInfo = g_iWndIndex;
+            },
+            cbInitPluginComplete: function () {
+                WebVideoCtrl.I_InsertOBJECTPlugin("divPlugin");
+
+                // 检查插件是否最新
+                if (-1 == WebVideoCtrl.I_CheckPluginVersion()) {
+                    alert("检测到新的插件版本，双击开发包目录里的WebComponentsKit.exe升级！");
+                    return;
+                }
+
+
+            }
+        });
+
+        // 关闭浏览器
+        $(window).unload(function () {
+            WebVideoCtrl.I_Stop();
+        });
+    });
+
+</script>
+</html>

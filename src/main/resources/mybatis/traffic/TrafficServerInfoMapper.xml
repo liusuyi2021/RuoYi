@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.project.traffic.serverinfo.mapper.TrafficServerInfoMapper">
+    
+    <resultMap type="TrafficServerInfo" id="TrafficServerInfoResult">
+        <result property="serverId"    column="server_id"    />
+        <result property="serverName"    column="server_name"    />
+        <result property="serverType"    column="server_type"    />
+        <result property="ipAddr"    column="ip_addr"    />
+        <result property="port"    column="port"    />
+        <result property="username"    column="username"    />
+        <result property="password"    column="password"    />
+        <result property="tdhsServerId"    column="tdhs_server_id"    />
+        <result property="minioServerId"    column="minio_server_id"    />
+    </resultMap>
+
+    <sql id="selectTrafficServerInfoVo">
+        select server_id, server_name, server_type, ip_addr, port, username, password, tdhs_server_id, minio_server_id from traffic_server_info
+    </sql>
+
+    <select id="selectTrafficServerInfoList" parameterType="TrafficServerInfo" resultMap="TrafficServerInfoResult">
+        <include refid="selectTrafficServerInfoVo"/>
+        <where>  
+            <if test="serverName != null  and serverName != ''"> and server_name like concat('%', #{serverName}, '%')</if>
+            <if test="serverType != null "> and server_type like concat('%', #{serverType}, '%')</if>
+            <if test="ipAddr != null  and ipAddr != ''"> and ip_addr = #{ipAddr}</if>
+            <if test="port != null  and port != ''"> and port = #{port}</if>
+            <if test="username != null  and username != ''"> and username = #{username}</if>
+            <if test="password != null  and password != ''"> and password = #{password}</if>
+            <if test="tdhsServerId != null "> and tdhs_server_id = #{tdhsServerId}</if>
+            <if test="minioServerId != null "> and minio_server_id = #{minioServerId}</if>
+            <if test="selectIds != null "> and server_id in
+                <foreach item="serverId" collection="selectIds" open="(" separator="," close=")">
+                    #{serverId}
+                </foreach>
+            </if>
+        </where>
+    </select>
+    <select id="selectTrafficServerInfoListByServerType" parameterType="String" resultMap="TrafficServerInfoResult">
+        <include refid="selectTrafficServerInfoVo"/>
+        <where>
+            <if test="serverType != null "> and server_type = #{serverType}</if>
+        </where>
+    </select>
+    <select id="selectTrafficServerInfoByServerId" parameterType="Long" resultMap="TrafficServerInfoResult">
+        <include refid="selectTrafficServerInfoVo"/>
+        where server_id = #{serverId}
+    </select>
+    <select id="checkServerTypeUnique" parameterType="String" resultType="int">
+        select count(1) from traffic_server_info where server_type=#{serverType} limit 1
+    </select>
+    <insert id="insertTrafficServerInfo" parameterType="TrafficServerInfo" useGeneratedKeys="true" keyProperty="serverId">
+        insert into traffic_server_info
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="serverName != null">server_name,</if>
+            <if test="serverType != null">server_type,</if>
+            <if test="ipAddr != null">ip_addr,</if>
+            <if test="port != null">port,</if>
+            <if test="username != null">username,</if>
+            <if test="password != null">password,</if>
+            <if test="tdhsServerId != null">tdhs_server_id,</if>
+            <if test="minioServerId != null">minio_server_id,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="serverName != null">#{serverName},</if>
+            <if test="serverType != null">#{serverType},</if>
+            <if test="ipAddr != null">#{ipAddr},</if>
+            <if test="port != null">#{port},</if>
+            <if test="username != null">#{username},</if>
+            <if test="password != null">#{password},</if>
+            <if test="tdhsServerId != null">#{tdhsServerId},</if>
+            <if test="minioServerId != null">#{minioServerId},</if>
+         </trim>
+    </insert>
+
+    <update id="updateTrafficServerInfo" parameterType="TrafficServerInfo">
+        update traffic_server_info
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="serverName != null">server_name = #{serverName},</if>
+            <if test="serverType != null">server_type = #{serverType},</if>
+            <if test="ipAddr != null">ip_addr = #{ipAddr},</if>
+            <if test="port != null">port = #{port},</if>
+            <if test="username != null">username = #{username},</if>
+            <if test="password != null">password = #{password},</if>
+            <if test="tdhsServerId != null">tdhs_server_id = #{tdhsServerId},</if>
+            <if test="minioServerId != null">minio_server_id = #{minioServerId},</if>
+        </trim>
+        where server_id = #{serverId}
+    </update>
+
+    <delete id="deleteTrafficServerInfoByServerId" parameterType="Long">
+        delete from traffic_server_info where server_id = #{serverId}
+    </delete>
+
+    <delete id="deleteTrafficServerInfoByServerIds" parameterType="Long">
+        delete from traffic_server_info where server_id in 
+        <foreach item="serverId" collection="array" open="(" separator="," close=")">
+            #{serverId}
+        </foreach>
+    </delete>
+
+</mapper>

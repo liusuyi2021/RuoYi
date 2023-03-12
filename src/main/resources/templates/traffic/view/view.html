@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:include="include :: header('视频监控')"/>
+    <th:block th:include="include :: layout-latest-css"/>
+    <th:block th:include="include :: ztree-css"/>
+    <th:block th:include="include :: select2-css"/>
+    <link rel="stylesheet" type="text/css" href="../js/view/styles.css">
+    <script src="../js/view/adapter.min.js"></script>
+    <script src="../js/view/webrtcstreamer.json"></script>
+    <script src="../js/view/webrtcstreamer.js"></script>
+    <style>
+        .col-sm-8 plugin {
+            width: 100%;
+            height: auto;
+        }
+        html, body {
+            padding: 0;
+            margin: 0;
+            height: 100%;
+        }
+        video::-webkit-media-controls-timeline {
+            display: none;
+        }
+        .ztree li span.button.controlunit_ico_open{
+            margin-right: 2px;
+            width: 16px;/* 图标大小*/
+            height: 16px;
+            background-image: url('/ico/tree_all_icons.gif');
+            background-position: left -16px;
+        }
+        .ztree li span.button.controlunit_ico_close{
+            margin-right: 2px;
+            width: 16px;/* 图标大小*/
+            height: 16px;
+            background-image: url('/ico/tree_all_icons.gif');
+            background-position: left -16px;
+        }
+        .ztree li span.button.stopLive_ico_docu{
+            margin-right: 2px;
+            width: 16px;/* 图标大小*/
+            height: 16px;
+            background-image: url('/ico/tree_all_icons.gif');
+            background-position: left -208px;
+        }
+        .ztree li span.button.startLive_ico_docu{
+            margin-right: 2px;
+            width: 16px;/* 图标大小*/
+            height: 16px;
+            background-image: url('/ico/tree_all_icons.gif');
+            background-position: left -224px;
+        }
+        video {
+            height: 100%;
+            width: 100%;
+            display: block;
+        }
+    </style>
+</head>
+<body>
+<div class="ui-layout-west">
+    <div class="box box-main">
+        <div class="box-header">
+            <div class="box-title">
+                <i class="fa icon-grid"></i> 组织机构
+            </div>
+            <div class="box-tools pull-right">
+                <a type="button" class="btn btn-box-tool" href="#" onclick="preview()" title="管理部门"><i
+                        class="fa fa-edit"></i></a>
+                <button type="button" class="btn btn-box-tool" id="btnExpand" title="展开" style="display:none;"><i
+                        class="fa fa-chevron-up"></i></button>
+                <button type="button" class="btn btn-box-tool" id="btnCollapse" title="折叠"><i
+                        class="fa fa-chevron-down"></i></button>
+                <button type="button" class="btn btn-box-tool" id="btnRefresh" title="刷新部门"><i
+                        class="fa fa-refresh"></i></button>
+            </div>
+        </div>
+        <div class="ui-layout-content">
+            <div id="tree" class="ztree"></div>
+        </div>
+    </div>
+</div>
+<div class="ui-layout-center" id="ui-layout-center">
+    <div class="container-div">
+        <div class="row">
+                <video id="video" muted controls disablePictureInPicture></video>
+        </div>
+    </div>
+</body>
+<th:block th:include="include :: footer"/>
+<th:block th:include="include :: layout-latest-js"/>
+<th:block th:include="include :: ztree-js"/>
+<script th:inline="javascript">
+    //初始化
+    $(function () {
+        var panehHidden = false;
+        if ($(this).width() < 769) {
+            panehHidden = true;
+        }
+        $('body').layout({initClosed: panehHidden, west__size: 185});
+        // 回到顶部绑定
+        if ($.fn.toTop !== undefined) {
+            var opt = {
+                win: $('.ui-layout-center'),
+                doc: $('.ui-layout-center')
+            };
+            $('#scroll-up').toTop(opt);
+        }
+        queryDeptTree();
+    });
+
+    //预览
+    function queryDeptTree() {
+        var url = ctx+"system/dept/treeDataView";
+        var options = {
+            url: url,
+            expandLevel: 2,
+            onDblClick: zOnClick
+        };
+        $.tree.init(options);
+        function zOnClick(even, treeId, treeNode) {
+            console.log(treeNode)
+            var devicetype=treeNode.deviceType;
+            var username=treeNode.userName;
+            var password=treeNode.passWord;
+            var ipaddr=treeNode.ipAddr;
+
+            if(devicetype=="09")
+            {
+                realViewHik(username,password,ipaddr);
+                updateTreeNodeIcon(treeNode,"startLive");
+            }
+            else if(devicetype=="0904")
+            {
+                realViewHikNVR(username,password,ipaddr);
+                updateTreeNodeIcon(treeNode,"startLive");
+            }
+            else if(devicetype=="16")
+            {
+                realViewDh(username,password,ipaddr);
+                updateTreeNodeIcon(treeNode,"startLive");
+            }
+            else if(devicetype=="0804")
+            {
+                realViewDhNVR(username,password,ipaddr);
+                updateTreeNodeIcon(treeNode,"startLive");
+            }
+        }
+    }
+    //更新预览通道图标
+    function updateTreeNodeIcon(treeNode,icon){
+        var treeObj = $.fn.zTree.getZTreeObj("tree");
+        treeNode.iconSkin=icon;
+        treeObj.updateNode(treeNode);
+    }
+    //预览海康相机
+    function realViewHik(username,password,ipaddr) {
+
+        this.webRtcServer = new WebRtcStreamer("video", "http://192.168.9.179:8000");
+        var rtspUrl="rtsp://"+username+":"+password+"@"+ipaddr+":554/h264/ch1/main/av_stream"
+        webRtcServer.connect(rtspUrl, null, "rtptransport=tcp");
+    }
+    //预览海康nvr
+    function realViewHikNVR(username,password,ipaddr) {
+        this.webRtcServer = new WebRtcStreamer("video", "http://192.168.9.179:8000");
+        var rtspUrl="rtsp://"+username+":"+password+"@"+ipaddr+":554/Streaming/Channels/101"
+        console.log(rtspUrl)
+        webRtcServer.connect(rtspUrl, null, "rtptransport=tcp");
+    }
+    //预览大华
+    function realViewDh(username,password,ipaddr) {
+        this.webRtcServer = new WebRtcStreamer("video", "http://192.168.9.179:8000");
+        var rtspUrl="rtsp://"+username+":"+password+"@"+ipaddr+":554/cam/realmonitor?channel=1&subtype=0"
+        webRtcServer.connect(rtspUrl, null, "rtptransport=tcp");
+    }
+    //预览大华终端
+    function realViewDhNVR(username,password,ipaddr) {
+        this.webRtcServer = new WebRtcStreamer("video", "http://192.168.9.179:8000");
+        var rtspUrl="rtsp://"+username+":"+password+"@"+ipaddr+":554/cam/realmonitor?channel=1&subtype=0"
+        webRtcServer.connect(rtspUrl, null, "rtptransport=tcp");
+    }
+    window.onbeforeunload = function () {
+        this.webRtcServer.disconnect()
+    }
+</script>
+</html>

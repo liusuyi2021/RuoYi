@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+    <th:block th:include="include :: header('通道信息列表')"/>
+</head>
+<body class="white-bg">
+<div class="container-div">
+    <div class="row">
+        <div class="col-sm-12 search-collapse" th:hidden="hidden">
+            <form id="data-form">
+                <div class="select-list">
+                    <ul>
+                        <li>
+                            设备ID：<select id="deviceId" name="deviceId" class="form-control">
+                            <option th:each="device : ${deviceList}" th:text="${device['deviceName']}"
+                                    th:value="${device['deviceId']}" th:field="*{device.deviceId}"></option>
+                        </select>
+                        </li>
+                    </ul>
+                </div>
+            </form>
+        </div>
+        <div class="btn-group-sm" id="toolbar" role="group">
+            <a class="btn btn-warning" onclick="exportSelected()" shiro:hasPermission="traffic:channelinfo:export">
+                <i class="fa fa-download"></i> 导出
+            </a>
+        </div>
+        <div class="col-sm-12 select-table table-striped">
+            <table id="bootstrap-table"></table>
+        </div>
+    </div>
+</div>
+<th:block th:include="include :: footer"/>
+<script th:inline="javascript">
+    var prefix = ctx + "traffic/channel";
+    $(function () {
+        var m = new Map();
+        var devices= [[${@TrafficDevice.selectTrafficDeviceInfoAll()}]];
+        for(var s =0;s<devices.length;s++){
+            m.set(devices[s].deviceId,devices[s].deviceName);
+            }
+        var options = {
+            url: prefix + "/list",
+            createUrl: prefix + "/add",
+            updateUrl: prefix + "/edit/{id}",
+            removeUrl: prefix + "/remove",
+            exportUrl: prefix + "/export",
+            showSearch: false,
+            uniqueId: 'channelId',  // 配置唯一标识
+            clickToSelect: true,    // 点击行选择
+            maintainSelected: true,  // 翻页保留所选行，需要和sidePagination一起使用才能生效
+            rememberSelected: true,  // 翻页记录所选行
+            modalName: "通道信息",
+            columns: [{
+                checkbox: true
+            },
+                {
+                    field: 'channelId',
+                    title: '通道ID'
+                },
+                {
+                    field: 'deviceId',
+                    title: '设备名称',
+                    formatter: function (value, row, index) {
+                        return m.get(value);
+                    }
+                },
+                {
+                    field: 'chanName',
+                    title: '通道名称'
+                },
+                {
+                    field: 'chanIndex',
+                    title: '通道号'
+                }]
+        };
+        $.table.init(options);
+    });
+
+    // 选择导出数据
+    function exportSelected() {
+        var ids = $.table.selectColumns("channelId");
+        var dataParam = $("#formId").serializeArray();
+        var tipMsg = "确定导出所有数据吗？";
+        if ($.common.isNotEmpty(ids)) {
+            tipMsg = "确定导出勾选" + ids.length + "条数据吗？";
+            dataParam.push({"name": "selectChannelIds", "value": ids});
+        }
+        $.modal.confirm(tipMsg, function () {
+            $.post(prefix + "/selectExport", dataParam, function (result) {
+                if (result.code == web_status.SUCCESS) {
+                    window.location.href = ctx + "common/download?fileName=" + encodeURI(result.msg) + "&delete=" + true;
+                } else {
+                    $.modal.alertError(result.msg);
+                }
+            });
+        });
+    }
+</script>
+</body>
+</html>

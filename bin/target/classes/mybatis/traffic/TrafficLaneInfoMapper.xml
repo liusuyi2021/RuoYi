@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.project.traffic.laneinfo.mapper.TrafficLaneInfoMapper">
+    
+    <resultMap type="TrafficLaneInfo" id="TrafficLaneInfoResult">
+        <result property="deviceId"    column="device_id"    />
+        <result property="laneId"    column="lane_id"    />
+        <result property="crossingId"    column="crossing_id"    />
+        <result property="channelId"    column="channel_id"    />
+        <result property="state"    column="state"    />
+        <result property="flag"    column="flag"    />
+    </resultMap>
+
+    <sql id="selectTrafficLaneInfoVo">
+        select device_id, lane_id, crossing_id, channel_id,state,flag from traffic_lane_info
+    </sql>
+
+    <select id="selectTrafficLaneInfoList" parameterType="TrafficLaneInfo" resultMap="TrafficLaneInfoResult">
+        <include refid="selectTrafficLaneInfoVo"/>
+        <where>  
+            <if test="deviceId != null  and deviceId != ''"> and device_id = #{deviceId}</if>
+            <if test="crossingId != null  and crossingId != ''"> and crossing_id = #{crossingId}</if>
+            <if test="channelId != null  and channelId != ''"> and channel_id = #{channelId}</if>
+            <if test="state != null  and state != ''"> and state = #{state}</if>
+            <if test="flag != null  and flag != ''"> and flag = #{flag}</if>
+        </where>
+    </select>
+    <select id="selectTrafficLaneInfoListByCrossingId" parameterType="Long" resultMap="TrafficLaneInfoResult">
+        <include refid="selectTrafficLaneInfoVo"/>
+        where crossing_id = #{crossingId}
+    </select>
+    <select id="selectTrafficLaneInfoByLaneId" parameterType="String" resultMap="TrafficLaneInfoResult">
+        <include refid="selectTrafficLaneInfoVo"/>
+        where lane_id = #{laneId}
+    </select>
+    <select id="selectTrafficLaneInfoByChanId" parameterType="Long" resultMap="TrafficLaneInfoResult">
+        <include refid="selectTrafficLaneInfoVo"/>
+        where channel_id = #{chanId}
+    </select>
+
+    <select id="selectTrafficLaneInfoByCrossingId" parameterType="Long" resultMap="TrafficLaneInfoResult">
+        <include refid="selectTrafficLaneInfoVo"/>
+        where crossing_id = #{crossingId}
+    </select>
+
+    <insert id="insertTrafficLaneInfo" parameterType="TrafficLaneInfo" useGeneratedKeys="true" keyProperty="laneId">
+        insert into traffic_lane_info
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="deviceId != null">device_id,</if>
+            <if test="crossingId != null">crossing_id,</if>
+            <if test="channelId != null">channel_id,</if>
+            <if test="state != null">state,</if>
+            <if test="flag != null">flag,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="deviceId != null">#{deviceId},</if>
+            <if test="crossingId != null">#{crossingId},</if>
+            <if test="channelId != null">#{channelId},</if>
+            <if test="state != null">#{state},</if>
+            <if test="flag != null">#{flag},</if>
+         </trim>
+    </insert>
+
+    <update id="updateTrafficLaneInfo" parameterType="TrafficLaneInfo">
+        update traffic_lane_info
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="deviceId != null">device_id = #{deviceId},</if>
+            <if test="crossingId != null">crossing_id = #{crossingId},</if>
+            <if test="channelId != null">channel_id = #{channelId},</if>
+            <if test="state != null">state = #{state},</if>
+            <if test="flag != null">flag = #{flag},</if>
+        </trim>
+        where lane_id = #{laneId}
+    </update>
+
+    <delete id="deleteTrafficLaneInfoByLaneId" parameterType="String">
+        delete from traffic_lane_info where lane_id = #{laneId}
+    </delete>
+    <delete id="deleteTrafficLaneInfoByCrossingId" parameterType="Long">
+        delete from traffic_lane_info where crossing_id = #{CrossingId}
+    </delete>
+    <delete id="deleteTrafficLaneInfoByLaneIds" parameterType="String">
+        delete from traffic_lane_info where lane_id in 
+        <foreach item="laneId" collection="array" open="(" separator="," close=")">
+            #{laneId}
+        </foreach>
+    </delete>
+
+</mapper>
