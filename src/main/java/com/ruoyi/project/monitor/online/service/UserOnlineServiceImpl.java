@@ -88,13 +88,14 @@ public class UserOnlineServiceImpl implements IUserOnlineService
     @Override
     public void saveOnline(UserOnline online)
     {
+        userOnlineDao.deleteOnlineById(online.getSessionId());
         userOnlineDao.saveOnline(online);
     }
 
     /**
      * 查询会话集合
      * 
-     * @param pageUtilEntity 分页参数
+     * @param  userOnline
      */
     @Override
     public List<UserOnline> selectUserOnlineList(UserOnline userOnline)

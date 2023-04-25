@@ -7,13 +7,12 @@
     <th:block th:include="include :: header('地图')"/>
     <link  th:rel="stylesheet"  th:href="@{/js/map/ol/ol.css}">
     <script th:src="@{/js/map/ol/ol.js}"></script>
-
-    <style type="text/css">
+    <style>
         #map {
             width: 100%;
             height: 100%;
             position: absolute;
-            background-image: url(../img/synjones.jpg);
+            background-image: url('../../img/synjones.jpg');
             background-repeat: repeat;
         }
         #mapfloor {
@@ -82,95 +81,51 @@
     </style>
     <title>地图demo</title>
 </head>
-
 <body>
 <div id="map">
     <div id="mousepos" class="ol-mouse-position"></div>
     <div id="meum">
-        <button id="zoom-in">缩小</button>
-        <button id="zoom-out">放大</button>
-        <button id="panto">平移到【哈尔滨】</button>
-        <button id="restore">复位</button>
+        <button id="zoom-in" class="btn btn-outline btn-primary dim">缩小</button>
+        <button id="zoom-out" class="btn btn-outline btn-primary dim">放大</button>
+        <button id="panto" class="btn btn-outline btn-primary dim">平移到【哈尔滨】</button>
+        <button id="restore" class="btn btn-outline btn-primary dim">复位</button>
     </div>
     <div id="mapfloor">11层</div>
 </div>
 <th:block th:include="include :: footer"/>
 <script th:inline="javascript">
-    //给8位字符串文件名补0  3.11适用
-    function zeroPad(num, len, radix) {
-        var str = num.toString(radix || 10);
-        while (str.length < len) {
-            str = "0" + str;
-        }
-        return str;
-    }
-    //给8位字符串文件名补0  6.14.1适用
-    function padLeft(str, len) {
-        return new Array(len - str.length + 1).join("0") + str;
-    }
-    // 空间参考
-    var projection = ol.proj.get('EPSG:4326');
-    // 数据源
-    var source = new ol.source.TileImage({
-        projection: projection,
-        tileUrlFunction: function (tileCoord) {
-            /* var x = 'C' + zeroPad(tileCoord[1], 8, 16);
-             var y = 'R' + zeroPad(-tileCoord[2] - 1, 8, 16);
-             var z = 'L' + zeroPad(tileCoord[0], 2, 10);*/
-            var z = tileCoord[0];
-            var x = Math.abs(tileCoord[1])
-            var y = Math.abs(tileCoord[2]) - 1;
-            x = x.toString(16);
-            y = y.toString(16);
-            z = z.toString();
-            x = padLeft(x, 8);
-            y = padLeft(y, 8);
-            z = padLeft(z, 2);
-            x = 'C' + x;
-            y = 'R' + y;
-            z = 'L' + z;
-            return "/map/m/" + z + '/' + y + '/' + x + '.png';//这里可以修改地图路径
-        }
+
+    //google地图
+    var googleMapLayer = new ol.layer.Tile({
+        source: new ol.source.XYZ({
+            url: 'http://www.google.cn/maps/vt/pb=!1m4!1m3!1i{z}!2i{x}!3i{y}!2m3!1e0!2sm!3i380072576!3m8!2szh-CN!3scn!5e1105!12m4!1e68!2m2!1sset!2sRoadmap!4e0!5m1!1e0'
+        })
     });
-    //鹰眼配置
-    const overviewMapControl = new ol.control.OverviewMap({
-        //className: 'ol-overviewmap ol-custom-overviewmap',
-        layers: [
-            new ol.layer.Tile(
-                {
-                    source: new ol.source.OSM()
-                   /* source: source,*/
-                }),
-        ]/*,
-        collapseLabel: '\u00BB',
-        label: '\u00AB',
-        collapsed: false,*/
+    //高德地图
+    var AMapLayer = new ol.layer.Tile({
+        source: new ol.source.XYZ({
+            url: 'http://wprd0{1-4}.is.autonavi.com/appmaptile?lang=zh_cn&size=1&style=7&x={x}&y={y}&z={z}'
+        })
     });
-    //基础图层
+    //将图层添加到map对象中
     var map = new ol.Map({
-        // 设置地图控件，默认的三个控件都不显示
+        //设置地图控件，默认的三个控件都不显示
         controls: ol.control.defaults({
             attribution: false,
             rotate: false,
-            zoom: true
+            zoom: false
         }),
-        controls: ol.control.defaults().extend([overviewMapControl]),
-        layers: [
-            new ol.layer.Tile({
-                source: new ol.source.OSM()
-            })
-        ],
+        layers:[AMapLayer],
         target: 'map',
         view: new ol.View({
-            center: ol.proj.transform(
-                [126.630, 45.760], 'EPSG:4326', 'EPSG:3857'),
+            center: [126.630, 45.760],
             zoom: 10,
-            //最小缩放等级
-            minZoom: 7,
-            //最大缩放等级
-            maxZoom: 17
+            minZoom:4,
+            maxZoom:20,
+            projection: 'EPSG:4326'
         })
     });
+
     //地图视图初始参数
     var view = map.getView();
     var zoom = view.getZoom();
@@ -211,7 +166,6 @@
     map.addControl(new ol.control.FullScreen());
     //鼠标事件
     map.on("pointermove", function (evnt) {
-
         var lonlat = ol.proj.transform(evnt.coordinate, 'EPSG:3857', 'EPSG:4326');
         $("#mousepos").html(lonlat[0].toFixed(6) + ", " + lonlat[1].toFixed(6)).show();
     });
